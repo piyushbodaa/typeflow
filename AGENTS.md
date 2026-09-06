@@ -6,5 +6,6 @@
 - WPM is `(correct characters / 5) / minutes elapsed`. Raw WPM includes incorrect and extra. Accuracy is `correct / (correct + incorrect + extra)`.
 - Client-only. Persist settings, lesson progress, and the last 50 results in localStorage. Never add a backend, auth, or PWA install prompt.
 - Desktop-first. Viewport under 1024px shows the keyboard gate. No hamburger menu.
-- Amber accent `#F5A524` on dark `#0B0D10`. Motion 150–200ms, no bounce.
+- Visual system: zinc chassis (`#0E1214`) with copper filament accent (`#E36A3A`). IBM Plex Sans for chrome, JetBrains Mono for the passage and numbers. Motion 180ms, no bounce.
+- `/` is a dashboard. Never mount the typing engine there. Tests and lessons wait for an explicit Begin (or `go=1` from the 1-minute CTA).
 - JSON word lists live in `src/data`. Do not fetch word banks at runtime.

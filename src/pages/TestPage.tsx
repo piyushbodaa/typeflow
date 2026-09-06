@@ -1,5 +1,5 @@
-import { useCallback, useMemo } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ModePills } from '../components/ModePills'
 import { ResultsPanel } from '../components/ResultsPanel'
 import { useTypingSession } from '../components/TypingSession'
@@ -26,10 +26,21 @@ function parseMode(
 
 export function TestPage() {
   const { settings } = useSettings()
+  const navigate = useNavigate()
   const [params, setParams] = useSearchParams()
   const mode = useMemo(() => parseMode(params), [params])
+  const [armed, setArmed] = useState(() => params.get('go') === '1')
+  const beginRef = useRef<HTMLButtonElement>(null)
   const { record } = useHistory()
   const config = useMemo(() => ({ mode, wordBank: words }), [mode])
+
+  useEffect(() => {
+    if (params.get('go') === '1') setArmed(true)
+  }, [params])
+
+  useEffect(() => {
+    if (!armed) beginRef.current?.focus()
+  }, [armed])
 
   const onComplete = useCallback(
     (snapshot: EngineSnapshot) => {
@@ -42,19 +53,28 @@ export function TestPage() {
     config,
     sound: settings.sound,
     showKeyboard: settings.showKeyboard,
+    armed,
     onComplete,
-    idleNote: 'Pick a duration or word count, then start typing.',
+    idleNote: 'First keystroke starts the clock. Tab then Enter restarts.',
     header: (
       <div className="mb-8">
-        <h1 className="mb-4 text-3xl font-medium tracking-tight">Test</h1>
-        <ModePills
-          mode={mode}
-          onTimed={(seconds: TimedSeconds) => setParams({ seconds: String(seconds) })}
-          onWords={(count: WordCount) => setParams({ words: String(count) })}
-        />
+        <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-accent">
+          {modeLabel(mode)}
+        </p>
+        <h1 className="mt-2 text-3xl font-medium tracking-tight">Type when you are ready.</h1>
       </div>
     ),
   })
+
+  function pickTime(seconds: TimedSeconds) {
+    setParams({ seconds: String(seconds) })
+    setArmed(false)
+  }
+
+  function pickWords(count: WordCount) {
+    setParams({ words: String(count) })
+    setArmed(false)
+  }
 
   if (session.snapshot.status === 'finished') {
     return (
@@ -63,9 +83,37 @@ export function TestPage() {
         <ResultsPanel
           snapshot={session.snapshot}
           copyLabel={modeLabel(mode)}
-          actions={[{ label: 'Retry', onClick: session.restart, primary: true }]}
+          actions={[
+            { label: 'Retry', onClick: session.restart, primary: true },
+            { label: 'Dashboard', onClick: () => navigate('/') },
+            { label: 'Lessons', onClick: () => navigate('/lessons') },
+          ]}
         />
       </>
+    )
+  }
+
+  if (!armed) {
+    return (
+      <div className="max-w-xl">
+        <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-accent">practice</p>
+        <h1 className="mt-3 text-3xl font-medium tracking-tight">Choose a current, then begin.</h1>
+        <p className="mt-3 text-sm leading-6 text-muted">
+          The clock does not start until you confirm. After that, the first keystroke is the gun.
+        </p>
+        <div className="mt-8">
+          <ModePills mode={mode} onTimed={pickTime} onWords={pickWords} />
+        </div>
+        <p className="mt-6 font-mono text-sm text-ink">{modeLabel(mode)}</p>
+        <button
+          ref={beginRef}
+          type="button"
+          className="btn btn-primary mt-8"
+          onClick={() => setArmed(true)}
+        >
+          Begin test
+        </button>
+      </div>
     )
   }
 

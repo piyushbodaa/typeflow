@@ -6,10 +6,11 @@ import { playKeytick } from '../lib/sound'
 interface Options {
   config: CreateEngineConfig
   sound?: boolean
+  armed?: boolean
   onComplete?: (snapshot: EngineSnapshot) => void
 }
 
-export function useTypingEngine({ config, sound = false, onComplete }: Options) {
+export function useTypingEngine({ config, sound = false, armed = true, onComplete }: Options) {
   const configKey = JSON.stringify(config.mode)
   const engineRef = useRef<Engine | null>(null)
   const prevKey = useRef(configKey)
@@ -65,6 +66,7 @@ export function useTypingEngine({ config, sound = false, onComplete }: Options) 
   }, [snapshot])
 
   useEffect(() => {
+    if (!armed) return
     const onWindowKey = (event: globalThis.KeyboardEvent) => {
       if (event.key === 'Tab') {
         event.preventDefault()
@@ -81,11 +83,11 @@ export function useTypingEngine({ config, sound = false, onComplete }: Options) 
     }
     window.addEventListener('keydown', onWindowKey)
     return () => window.removeEventListener('keydown', onWindowKey)
-  }, [restart])
+  }, [restart, armed])
 
   const onKeyDown = useCallback((event: KeyboardEvent<HTMLInputElement>) => {
     const engine = engineRef.current
-    if (!engine) return
+    if (!engine || !armed) return
     const now = performance.now()
 
     if (event.key === 'Tab') {
@@ -120,7 +122,7 @@ export function useTypingEngine({ config, sound = false, onComplete }: Options) 
       if (soundRef.current) playKeytick()
       setSnapshot(engine.handleKey(event.key, now))
     }
-  }, [restart])
+  }, [restart, armed])
 
   const focus = useCallback(() => {
     inputRef.current?.focus()

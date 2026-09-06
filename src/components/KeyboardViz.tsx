@@ -22,8 +22,8 @@ export function KeyboardViz({ expected }: { expected: string }) {
   const shiftOn = needsShift(expected)
 
   return (
-    <div className="mt-10 select-none font-mono text-[11px] text-muted" aria-hidden>
-      <div className="flex flex-col items-center gap-1.5">
+    <div className="mt-12 select-none font-mono text-[11px] text-muted" aria-hidden>
+      <div className="flex flex-col items-center gap-1">
         <KeyRow keys={ROW1} active={phys} />
         <KeyRow keys={ROW2} active={phys} offset="ml-4" />
         <div className="flex gap-1">
@@ -34,7 +34,7 @@ export function KeyboardViz({ expected }: { expected: string }) {
         <KeyRow keys={ROW4} active={phys} offset="ml-8" />
         <WideKey label="space" active={phys === ' '} width="w-64" />
       </div>
-      <p className="mt-3 text-center text-[10px] uppercase tracking-[0.18em] text-muted/80">
+      <p className="mt-4 text-center text-[10px] uppercase tracking-[0.2em] text-muted/80">
         home row · P R M I · I M R P
       </p>
     </div>
@@ -58,8 +58,8 @@ function KeyRow({
         <div
           key={key}
           className={cn(
-            'flex h-9 w-9 flex-col items-center justify-center rounded-sm border border-line bg-elev text-ink/80',
-            active === key && 'border-accent bg-accent/20 text-accent',
+            'flex h-9 w-9 flex-col items-center justify-center rounded-[2px] border border-line bg-elev text-ink/80 transition-colors duration-180',
+            active === key && 'border-accent bg-accent/15 text-accent',
           )}
         >
           <span>{key}</span>
@@ -76,9 +76,9 @@ function WideKey({ label, active, width }: { label: string; active: boolean; wid
   return (
     <div
       className={cn(
-        'flex h-9 items-center justify-center rounded-sm border border-line bg-elev text-ink/70',
+        'flex h-9 items-center justify-center rounded-[2px] border border-line bg-elev text-ink/70 transition-colors duration-180',
         width,
-        active && 'border-accent bg-accent/20 text-accent',
+        active && 'border-accent bg-accent/15 text-accent',
       )}
     >
       {label}

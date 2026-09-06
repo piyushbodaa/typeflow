@@ -12,16 +12,16 @@ interface ModePillsProps {
 
 export function ModePills({ mode, onTimed, onWords }: ModePillsProps) {
   return (
-    <div className="flex flex-wrap items-center gap-6 font-mono text-sm">
+    <div className="flex flex-wrap items-center gap-8 font-mono text-sm">
       <div className="flex items-center gap-2">
-        <span className="text-xs uppercase tracking-wider text-muted">time</span>
+        <span className="text-[10px] uppercase tracking-[0.2em] text-muted">time</span>
         {TIMES.map((seconds) => (
           <button
             key={seconds}
             type="button"
             onClick={() => onTimed(seconds)}
             className={cn(
-              'bg-transparent px-1.5 py-0.5 text-muted',
+              'border-0 bg-transparent px-1.5 py-0.5 text-muted transition-colors duration-180',
               mode.kind === 'timed' && mode.seconds === seconds && 'text-accent',
             )}
           >
@@ -30,14 +30,14 @@ export function ModePills({ mode, onTimed, onWords }: ModePillsProps) {
         ))}
       </div>
       <div className="flex items-center gap-2">
-        <span className="text-xs uppercase tracking-wider text-muted">words</span>
+        <span className="text-[10px] uppercase tracking-[0.2em] text-muted">words</span>
         {COUNTS.map((count) => (
           <button
             key={count}
             type="button"
             onClick={() => onWords(count)}
             className={cn(
-              'bg-transparent px-1.5 py-0.5 text-muted',
+              'border-0 bg-transparent px-1.5 py-0.5 text-muted transition-colors duration-180',
               mode.kind === 'words' && mode.count === count && 'text-accent',
             )}
           >

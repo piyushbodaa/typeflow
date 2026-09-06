@@ -10,6 +10,7 @@ interface TypingSessionOptions {
   config: CreateEngineConfig
   sound: boolean
   showKeyboard: boolean
+  armed?: boolean
   onComplete?: (snapshot: EngineSnapshot) => void
   idleNote?: ReactNode
   header?: ReactNode
@@ -19,6 +20,7 @@ export function useTypingSession({
   config,
   sound,
   showKeyboard,
+  armed = true,
   onComplete,
   idleNote,
   header,
@@ -26,18 +28,19 @@ export function useTypingSession({
   const { snapshot, restart, inputRef, onKeyDown, focus } = useTypingEngine({
     config,
     sound,
+    armed,
     onComplete,
   })
   const { setFocused } = useFocusMode()
 
   useEffect(() => {
-    setFocused(snapshot.status === 'running')
+    setFocused(armed && snapshot.status === 'running')
     return () => setFocused(false)
-  }, [snapshot.status, setFocused])
+  }, [snapshot.status, setFocused, armed])
 
   useEffect(() => {
-    focus()
-  }, [focus])
+    if (armed) focus()
+  }, [focus, armed])
 
   const view =
     snapshot.status === 'finished' ? (

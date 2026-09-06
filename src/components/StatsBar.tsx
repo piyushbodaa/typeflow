@@ -9,8 +9,8 @@ export function StatsBar({ stats }: { stats: LiveStats }) {
         : ''
 
   return (
-    <div className="flex flex-wrap gap-x-8 gap-y-2 font-mono text-sm tabular-nums text-muted">
-      <Stat label="wpm" value={Math.round(stats.wpm).toString()} />
+    <div className="flex flex-wrap gap-x-10 gap-y-2 font-mono text-sm tabular-nums">
+      <Stat label="wpm" value={Math.round(stats.wpm).toString()} hot />
       <Stat label="raw" value={Math.round(stats.rawWpm).toString()} />
       <Stat label="acc" value={`${Math.round(stats.accuracy)}%`} />
       {remaining ? <Stat label="left" value={remaining} /> : null}
@@ -18,11 +18,11 @@ export function StatsBar({ stats }: { stats: LiveStats }) {
   )
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({ label, value, hot }: { label: string; value: string; hot?: boolean }) {
   return (
     <div className="flex items-baseline gap-2">
-      <span className="text-xs uppercase tracking-wider text-muted">{label}</span>
-      <span className="text-ink">{value}</span>
+      <span className="text-[10px] uppercase tracking-[0.2em] text-muted">{label}</span>
+      <span className={hot ? 'text-accent' : 'text-ink'}>{value}</span>
     </div>
   )
 }

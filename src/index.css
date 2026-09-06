@@ -1,28 +1,34 @@
 @import "tailwindcss";
+@import "@fontsource/ibm-plex-sans/400.css";
+@import "@fontsource/ibm-plex-sans/500.css";
+@import "@fontsource/ibm-plex-sans/600.css";
 @import "@fontsource/jetbrains-mono/400.css";
 @import "@fontsource/jetbrains-mono/500.css";
 @import "@fontsource/jetbrains-mono/600.css";
 
 @theme {
-  --color-canvas: #0b0d10;
-  --color-elev: #12151a;
-  --color-ink: #e8e6e3;
-  --color-muted: #8b8a86;
-  --color-accent: #f5a524;
-  --color-error: #e85d4c;
-  --color-line: #1e232b;
+  --color-canvas: #0e1214;
+  --color-elev: #171c1f;
+  --color-ink: #e7e4de;
+  --color-muted: #7a848a;
+  --color-accent: #e36a3a;
+  --color-heat: #f0a36a;
+  --color-error: #d4526a;
+  --color-line: #252c31;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  --font-sans: "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --duration-180: 180ms;
 }
 
 html.light {
-  --color-canvas: #f4f1ea;
-  --color-elev: #fffdf8;
-  --color-ink: #1a1916;
-  --color-muted: #6f6e6a;
-  --color-accent: #c47d12;
-  --color-error: #c44536;
-  --color-line: #e4dfd4;
+  --color-canvas: #f1eee8;
+  --color-elev: #fcfaf6;
+  --color-ink: #1a1e21;
+  --color-muted: #5e686e;
+  --color-accent: #c24e24;
+  --color-heat: #d47a3c;
+  --color-error: #b53a4c;
+  --color-line: #ddd8d0;
 }
 
 html,
@@ -64,8 +70,89 @@ body {
   }
 }
 
+.current-rail {
+  position: relative;
+  height: 1px;
+  overflow: hidden;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-line) 12%,
+    var(--color-accent) 50%,
+    var(--color-line) 88%,
+    transparent
+  );
+}
+
+.current-rail::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  width: 42px;
+  height: 3px;
+  background: var(--color-heat);
+  filter: blur(0.6px);
+  animation: current-run 8s linear infinite;
+}
+
+@keyframes current-run {
+  from {
+    left: -48px;
+  }
+  to {
+    left: 100%;
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-line);
+  background: transparent;
+  color: var(--color-ink);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  padding: 10px 18px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease;
+}
+
+.btn:hover {
+  border-color: var(--color-muted);
+}
+
+.btn-primary {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #140e0c;
+  font-size: 14px;
+  padding: 14px 22px;
+}
+
+.btn-primary:hover {
+  background: var(--color-heat);
+  border-color: var(--color-heat);
+}
+
+.btn-ghost {
+  padding: 8px 0;
+  border: 0;
+  color: var(--color-muted);
+}
+
+.btn-ghost:hover {
+  color: var(--color-ink);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .caret {
+  .caret,
+  .current-rail::after {
     animation: none;
   }
   * {

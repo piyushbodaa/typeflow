@@ -1,8 +1,12 @@
-export function Sparkline({ series }: { series: number[] }) {
-  const width = 280
-  const height = 56
+export function Sparkline({ series, compact = false }: { series: number[]; compact?: boolean }) {
+  const width = compact ? 112 : 280
+  const height = compact ? 36 : 56
   if (series.length < 2) {
-    return <p className="text-sm text-muted">Not enough samples for a pace curve.</p>
+    return compact ? (
+      <span className="font-mono text-xs text-muted">n/a</span>
+    ) : (
+      <p className="text-sm text-muted">Not enough samples for a pace curve.</p>
+    )
   }
   const max = Math.max(...series, 1)
   const min = Math.min(...series, 0)
@@ -16,11 +20,17 @@ export function Sparkline({ series }: { series: number[] }) {
     .join(' ')
 
   return (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} aria-hidden className="text-accent">
+    <svg
+      width={width}
+      height={height}
+      viewBox={`0 0 ${width} ${height}`}
+      aria-hidden
+      className="text-accent"
+    >
       <polyline
         fill="none"
         stroke="currentColor"
-        strokeWidth="2"
+        strokeWidth="1.5"
         strokeLinejoin="round"
         strokeLinecap="round"
         points={points}

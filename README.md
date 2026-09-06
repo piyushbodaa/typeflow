@@ -1,8 +1,8 @@
 # typeflow
 
-Get into flow. Type faster.
+Find the current.
 
-A desktop-only typing trainer. Instant 60-second test on the home page, structured lessons, and local history. No accounts. No server.
+A desktop-only typing trainer. The home page is a dashboard. Tests and lessons start only after you confirm. No accounts. No server.
 
 ## Requirements
 
@@ -16,7 +16,19 @@ npm install
 npm run dev
 ```
 
-Open the printed local URL (usually `http://localhost:5173`) and start typing. The first keystroke starts a 60-second test.
+Open the printed local URL (usually `http://localhost:5173`). You land on the dashboard. **Start 1-minute test** is the primary action.
+
+## Routes
+
+| Path | What it is |
+|---|---|
+| `/` | Dashboard — pitch, stats, recent results, desk settings. No live test. |
+| `/test` | Timed and word-count practice. Choose a mode, then **Begin**. |
+| `/test?seconds=60&go=1` | Confirmed 1-minute test (used by the dashboard CTA). First keystroke starts the clock. |
+| `/lessons` | Twelve sequential drills. |
+| `/lessons/:id` | Lesson player. **Begin lesson**, then type. Pass at 95% accuracy. |
+| `/history` | Last 50 local results. |
+| `/about` | Desktop-only, WPM formula, privacy. |
 
 ## Build
 
@@ -47,5 +59,6 @@ Settings, lesson progress, and the last 50 results live in `localStorage` under 
 
 ## Shortcuts
 
-- Start: type
+- Confirm a run: **Begin** (Enter on the focused button)
+- Start the clock: first keystroke, after you have begun
 - Restart: <kbd>Tab</kbd> then <kbd>Enter</kbd>
