@@ -1,7 +1,5 @@
 # typeflow
 
-Find the current.
-
 A desktop-only typing trainer. The home page is a dashboard. Tests and lessons start only after you confirm. No accounts. No server.
 
 ## Requirements
@@ -22,7 +20,7 @@ Open the printed local URL (usually `http://localhost:5173`). You land on the da
 
 | Path | What it is |
 |---|---|
-| `/` | Dashboard — pitch, stats, recent results, desk settings. No live test. |
+| `/` | Dashboard — start test, lessons, history, snapshot stats, settings. No live test. |
 | `/test` | Timed and word-count practice. Choose a mode, then **Begin**. |
 | `/test?seconds=60&go=1` | Confirmed 1-minute test (used by the dashboard CTA). First keystroke starts the clock. |
 | `/lessons` | Twelve sequential drills. |

@@ -1,10 +1,10 @@
 import { needsShift, physicalKey } from '../engine/keys'
 import { cn } from '../lib/cn'
 
-const ROW1 = ['`','1','2','3','4','5','6','7','8','9','0','-','=']
-const ROW2 = ['q','w','e','r','t','y','u','i','o','p','[',']','\\']
-const ROW3 = ['a','s','d','f','g','h','j','k','l',';',"'"]
-const ROW4 = ['z','x','c','v','b','n','m',',','.','/']
+const ROW1 = ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=']
+const ROW2 = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\']
+const ROW3 = ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'"]
+const ROW4 = ['z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/']
 
 const FINGERS: Record<string, string> = {
   a: 'P',
@@ -34,8 +34,8 @@ export function KeyboardViz({ expected }: { expected: string }) {
         <KeyRow keys={ROW4} active={phys} offset="ml-8" />
         <WideKey label="space" active={phys === ' '} width="w-64" />
       </div>
-      <p className="mt-4 text-center text-[10px] uppercase tracking-[0.2em] text-muted/80">
-        home row · P R M I · I M R P
+      <p className="mt-4 text-center text-[10px] uppercase tracking-[0.12em] text-muted">
+        Home row · P R M I · I M R P
       </p>
     </div>
   )
@@ -58,13 +58,15 @@ function KeyRow({
         <div
           key={key}
           className={cn(
-            'flex h-9 w-9 flex-col items-center justify-center rounded-[2px] border border-line bg-elev text-ink/80 transition-colors duration-180',
-            active === key && 'border-accent bg-accent/15 text-accent',
+            'flex h-8 w-8 flex-col items-center justify-center rounded-sm border border-border bg-elevated text-fg/80 transition-colors duration-180',
+            active === key && 'border-fg bg-fg text-bg',
           )}
         >
           <span>{key}</span>
           {fingers && FINGERS[key] ? (
-            <span className="text-[8px] leading-none text-muted">{FINGERS[key]}</span>
+            <span className={cn('text-[8px] leading-none', active === key ? 'text-bg/70' : 'text-muted')}>
+              {FINGERS[key]}
+            </span>
           ) : null}
         </div>
       ))}
@@ -76,9 +78,9 @@ function WideKey({ label, active, width }: { label: string; active: boolean; wid
   return (
     <div
       className={cn(
-        'flex h-9 items-center justify-center rounded-[2px] border border-line bg-elev text-ink/70 transition-colors duration-180',
+        'flex h-8 items-center justify-center rounded-sm border border-border bg-elevated text-fg/70 transition-colors duration-180',
         width,
-        active && 'border-accent bg-accent/15 text-accent',
+        active && 'border-fg bg-fg text-bg',
       )}
     >
       {label}

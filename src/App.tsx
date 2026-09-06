@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import { DesktopGate } from './components/DesktopGate'
-import { Layout } from './components/Layout'
+import { AppShell } from './components/AppShell'
 import { FocusModeContext } from './hooks/useFocusMode'
 import { useDesktopGate } from './hooks/useDesktopGate'
 import { SettingsProvider, useSettings } from './hooks/useTheme'
@@ -22,7 +22,7 @@ function Root() {
 
   return (
     <FocusModeContext.Provider value={focusValue}>
-      <Layout
+      <AppShell
         focused={focused}
         settings={settings}
         onToggleTheme={toggleTheme}
