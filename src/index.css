@@ -246,6 +246,42 @@ html:not(.light) .ribbon-mark img {
   max-width: 66ch;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.hub-peek {
+  animation: peek-in 180ms ease both;
+}
+
+.hub-peek-ribbon {
+  mix-blend-mode: multiply;
+}
+
+html:not(.light) .hub-peek-ribbon {
+  mix-blend-mode: normal;
+  filter: brightness(0.78) contrast(1.12) saturate(0.88);
+}
+
+@keyframes peek-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .caret {
     animation: none;
