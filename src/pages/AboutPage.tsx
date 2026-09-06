@@ -11,9 +11,8 @@ export function AboutPage() {
         A desk for setting type.
       </h1>
       <p className="mt-6 text-muted">
-        Typeflow is a desktop typing trainer for people who already type on phones and want real
-        keyboard speed. It is built for a physical keyboard, which is why the layout refuses to
-        shrink into a touch UI.
+        Typeflow is a typing trainer for a real keyboard — and it still runs on a phone. A
+        physical keyboard is better; glass still counts.
       </p>
       <p className="mt-4 text-muted">
         Words per minute uses the standard formula: (correct characters / 5) divided by minutes

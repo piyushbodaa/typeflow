@@ -1,11 +1,11 @@
 # typeflow
 
-A desktop-only typing trainer. The home page is a dashboard. Tests and lessons start only after you confirm. No accounts. No server.
+A typing trainer for desktop and phone. The home page is a dashboard. Tests and lessons start only after you confirm. No accounts. No server.
 
 ## Requirements
 
 - Node.js 20+
-- A laptop or desktop with a physical keyboard (viewport ≥ 1024px)
+- A keyboard (physical is best; on-glass practice works)
 
 ## Run
 

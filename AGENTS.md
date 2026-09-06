@@ -5,7 +5,7 @@
 - The typing engine (`src/engine`) is pure TypeScript: no React, no DOM, no `localStorage`. Test and Lessons both call `createEngine`.
 - WPM is `(correct characters / 5) / minutes elapsed`. Raw WPM includes incorrect and extra. Accuracy is `correct / (correct + incorrect + extra)`.
 - Client-only. Persist settings, lesson progress, and the last 50 results in localStorage. Never add a backend, auth, or PWA install prompt.
-- Desktop-first. Viewport under 1024px shows the keyboard gate. No hamburger menu.
+- Desktop-first, phone-capable. No viewport gate. No hamburger menu. A physical keyboard is ideal; on-glass practice is allowed.
 - Visual system: Carbon Lot — ivory proof stock and carbon ink, ribbon-red register as the only accent. Newsreader for display, Source Sans 3 for chrome, IBM Plex Mono for the passage and numbers. Motion 180ms, no bounce.
 - `/` is a dashboard. Never mount the typing engine there. Tests and lessons wait for an explicit Begin (or `go=1` from the 1-minute CTA).
 - JSON word lists live in `src/data`. Do not fetch word banks at runtime.

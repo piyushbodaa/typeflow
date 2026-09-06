@@ -3,7 +3,10 @@ import { Link } from 'react-router-dom'
 export function PrimaryActions() {
   return (
     <div className="flex flex-wrap items-center gap-x-10 gap-y-5">
-      <Link to="/test?seconds=60&go=1" className="btn btn-primary px-7 py-3.5 text-[16px] no-underline">
+      <Link
+        to="/test?seconds=60&go=1"
+        className="btn btn-primary w-full px-7 py-3.5 text-[16px] no-underline sm:w-auto"
+      >
         Start test
         <span className="font-mono text-[11px] font-normal tracking-wide opacity-70">60s</span>
       </Link>

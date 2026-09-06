@@ -17,7 +17,7 @@ export function HistoryTable({ results }: { results: TestResult[] }) {
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-left font-mono text-sm">
+      <table className="w-full min-w-[36rem] text-left font-mono text-sm">
         <thead className="text-[11px] uppercase tracking-[0.14em] text-muted">
           <tr>
             <th className="relative w-[22%] pb-3 font-normal">

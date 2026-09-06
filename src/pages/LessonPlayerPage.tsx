@@ -133,7 +133,7 @@ export function LessonPlayerPage() {
         <button
           ref={beginRef}
           type="button"
-          className="btn btn-primary mt-8"
+          className="btn btn-primary mt-8 w-full sm:w-auto"
           onClick={() => setArmed(true)}
         >
           Begin lesson

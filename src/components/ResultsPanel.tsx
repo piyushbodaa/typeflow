@@ -41,7 +41,7 @@ export function ResultsPanel({ snapshot, copyLabel, actions }: ResultsPanelProps
       <p className="kicker mt-8">Result</p>
       <div className="mt-5 flex flex-wrap items-end gap-x-16 gap-y-8">
         <div>
-          <p className="font-mono text-[6.5rem] font-medium leading-none tabular-nums tracking-tight text-fg">
+          <p className="font-mono text-6xl font-medium leading-none tabular-nums tracking-tight text-fg lg:text-[6.5rem]">
             {Math.round(stats.wpm)}
           </p>
           <p className="mt-2 font-mono text-[11px] uppercase tracking-[0.16em] text-muted">WPM</p>
@@ -65,19 +65,19 @@ export function ResultsPanel({ snapshot, copyLabel, actions }: ResultsPanelProps
         </div>
       ) : null}
 
-      <div className="mt-10 flex flex-wrap gap-3">
+      <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
         {actions.map((action, i) => (
           <button
             key={action.label}
             ref={i === 0 ? firstRef : undefined}
             type="button"
             onClick={action.onClick}
-            className={action.primary ? 'btn btn-primary' : 'btn'}
+            className={action.primary ? 'btn btn-primary w-full sm:w-auto' : 'btn w-full sm:w-auto'}
           >
             {action.label}
           </button>
         ))}
-        <button type="button" onClick={() => void copy()} className="btn">
+        <button type="button" onClick={() => void copy()} className="btn w-full sm:w-auto">
           {copied ? 'Copied' : 'Copy result'}
         </button>
       </div>

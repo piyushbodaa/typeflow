@@ -32,15 +32,18 @@ export function HomePage() {
           </Link>
         </p>
       ) : null}
-      <div className="flex flex-wrap items-end gap-12">
+      <p className="text-[13px] leading-5 text-muted">
+        A physical keyboard is best. You can still practice here.
+      </p>
+      <div className="flex flex-col gap-8 lg:flex-row lg:flex-wrap lg:items-end lg:gap-12">
         <RibbonMark />
-        <div className="min-w-[20rem] flex-1">
+        <div className="min-w-0 flex-1">
           <StatsSnapshot snap={snap} />
         </div>
       </div>
 
-      <section className="grid grid-cols-12 gap-12">
-        <div className="col-span-7">
+      <section className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-12">
+        <div className="lg:col-span-7">
           <div className="mb-4 flex items-baseline justify-between">
             <h2 className="kicker">Recent</h2>
             <Link to="/history" className="font-mono text-[12px] text-muted no-underline hover:text-fg">
@@ -72,7 +75,7 @@ export function HomePage() {
           )}
         </div>
 
-        <div className="col-span-5">
+        <div className="lg:col-span-5">
           <SettingsPanel
             settings={settings}
             onToggleTheme={toggleTheme}

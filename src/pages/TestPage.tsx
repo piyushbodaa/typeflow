@@ -58,7 +58,7 @@ export function TestPage() {
     showKeyboard: settings.showKeyboard,
     armed,
     onComplete,
-    idleNote: 'First keystroke starts the clock. Tab then Enter restarts.',
+    idleNote: 'First keystroke starts the clock. Tab then Enter restarts. Tap the line to summon the keyboard.',
     header: (
       <div className="mb-10">
         <div className="rule mb-8" />
@@ -107,7 +107,7 @@ export function TestPage() {
         </h1>
         <p className="mt-4 max-w-lg text-[15px] leading-7 text-muted">
           The clock does not start until you confirm. After that, the first keystroke starts the
-          run.
+          run. A physical keyboard is better; glass still counts.
         </p>
         <div className="mt-10">
           <ModePicker mode={mode} onTimed={pickTime} onWords={pickWords} />
@@ -115,7 +115,7 @@ export function TestPage() {
         <button
           ref={beginRef}
           type="button"
-          className="btn btn-primary mt-8"
+          className="btn btn-primary mt-8 w-full sm:w-auto"
           onClick={() => setArmed(true)}
         >
           Begin test

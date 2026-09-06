@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from 'react'
+import { useCallback, useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react'
 import { createEngine } from '../engine/engine'
 import type { CreateEngineConfig, Engine, EngineSnapshot } from '../engine/types'
 import { playKeytick } from '../lib/sound'
@@ -31,6 +31,7 @@ export function useTypingEngine({ config, sound = false, armed = true, onComplet
   soundRef.current = sound
   const onCompleteRef = useRef(onComplete)
   onCompleteRef.current = onComplete
+  const keydownHandled = useRef(false)
 
   const restart = useCallback(() => {
     finishedRef.current = false
@@ -85,48 +86,95 @@ export function useTypingEngine({ config, sound = false, armed = true, onComplet
     return () => window.removeEventListener('keydown', onWindowKey)
   }, [restart, armed])
 
-  const onKeyDown = useCallback((event: KeyboardEvent<HTMLInputElement>) => {
-    const engine = engineRef.current
-    if (!engine || !armed) return
-    const now = performance.now()
+  const ingest = useCallback(
+    (keys: string[]) => {
+      const engine = engineRef.current
+      if (!engine || !armed || keys.length === 0) return
+      const now = performance.now()
+      let snap = engine.getSnapshot()
+      for (const key of keys) {
+        snap = engine.handleKey(key, now)
+        if (soundRef.current && key !== 'Backspace') playKeytick()
+      }
+      setSnapshot(snap)
+    },
+    [armed],
+  )
 
-    if (event.key === 'Tab') {
-      event.preventDefault()
-      tabArmed.current = true
-      return
-    }
-    if (event.key === 'Enter') {
-      event.preventDefault()
-      if (tabArmed.current) restart()
+  const onKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLInputElement>) => {
+      const engine = engineRef.current
+      if (!engine || !armed) return
+
+      if (event.key === 'Tab') {
+        event.preventDefault()
+        tabArmed.current = true
+        return
+      }
+      if (event.key === 'Enter') {
+        event.preventDefault()
+        if (tabArmed.current) restart()
+        tabArmed.current = false
+        return
+      }
+
       tabArmed.current = false
-      return
-    }
+      if (event.ctrlKey || event.metaKey || event.altKey) return
+      if (event.key === 'Unidentified' || event.key === 'Process') return
 
-    tabArmed.current = false
+      if (event.key === 'Backspace') {
+        event.preventDefault()
+        keydownHandled.current = true
+        ingest(['Backspace'])
+        return
+      }
+      if (event.key === ' ') {
+        event.preventDefault()
+        keydownHandled.current = true
+        ingest([' '])
+        return
+      }
+      if (event.key.length === 1) {
+        event.preventDefault()
+        keydownHandled.current = true
+        ingest([event.key])
+      }
+    },
+    [restart, armed, ingest],
+  )
 
-    if (event.ctrlKey || event.metaKey || event.altKey) return
+  const onInput = useCallback(
+    (event: FormEvent<HTMLInputElement>) => {
+      const el = event.currentTarget
+      const native = event.nativeEvent as InputEvent
+      const skipped = keydownHandled.current
+      keydownHandled.current = false
+      if (skipped) {
+        el.value = ''
+        return
+      }
+      if (!armed) {
+        el.value = ''
+        return
+      }
 
-    if (event.key === 'Backspace') {
-      event.preventDefault()
-      setSnapshot(engine.handleKey('Backspace', now))
-      return
-    }
-    if (event.key === ' ') {
-      event.preventDefault()
-      if (soundRef.current) playKeytick()
-      setSnapshot(engine.handleKey(' ', now))
-      return
-    }
-    if (event.key.length === 1) {
-      event.preventDefault()
-      if (soundRef.current) playKeytick()
-      setSnapshot(engine.handleKey(event.key, now))
-    }
-  }, [restart, armed])
+      const type = native.inputType ?? ''
+      if (type.startsWith('delete')) {
+        ingest(['Backspace'])
+        el.value = ''
+        return
+      }
+
+      const keys = [...el.value].filter((ch) => ch !== '\n' && ch !== '\r')
+      if (keys.length > 0) ingest(keys)
+      el.value = ''
+    },
+    [armed, ingest],
+  )
 
   const focus = useCallback(() => {
     inputRef.current?.focus()
   }, [])
 
-  return { snapshot, restart, inputRef, onKeyDown, focus }
+  return { snapshot, restart, inputRef, onKeyDown, onInput, focus }
 }

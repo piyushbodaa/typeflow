@@ -28,36 +28,16 @@ export function AppShell({
   onToggleSound,
 }: AppShellProps) {
   return (
-    <div className="min-h-screen text-fg">
+    <div className="min-h-dvh text-fg">
       <div
         className={cn(
           'border-b border-border transition-opacity duration-180',
           focused && 'pointer-events-none h-0 overflow-hidden border-transparent opacity-0',
         )}
       >
-        <header className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-8">
+        <header className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-3 gap-y-3 px-5 py-3 lg:h-14 lg:flex-nowrap lg:justify-between lg:px-8 lg:py-0">
           <Wordmark />
-          <nav className="flex items-center gap-7 text-[13px] tracking-wide">
-            {links.map((link) => (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                className={({ isActive }) =>
-                  cn(
-                    'text-muted no-underline transition-colors duration-180 hover:text-fg',
-                    isActive && 'text-fg',
-                  )
-                }
-              >
-                {({ isActive }) => (
-                  <span className={cn('pb-px', isActive && 'shadow-[inset_0_-2px_0_0_var(--color-accent)]')}>
-                    {link.label}
-                  </span>
-                )}
-              </NavLink>
-            ))}
-          </nav>
-          <div className="flex items-center gap-0.5">
+          <div className="ml-auto flex items-center lg:order-last lg:ml-0">
             <IconToggle
               label={settings.showKeyboard ? 'Hide on-screen keyboard' : 'Show on-screen keyboard'}
               pressed={settings.showKeyboard}
@@ -87,9 +67,29 @@ export function AppShell({
               )}
             </IconToggle>
           </div>
+          <nav className="order-last flex w-full items-center justify-between gap-2 text-[13px] tracking-wide lg:order-none lg:w-auto lg:justify-center lg:gap-7">
+            {links.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                className={({ isActive }) =>
+                  cn(
+                    'inline-flex min-h-11 items-center text-muted no-underline transition-colors duration-180 hover:text-fg lg:min-h-0',
+                    isActive && 'text-fg',
+                  )
+                }
+              >
+                {({ isActive }) => (
+                  <span className={cn('pb-px', isActive && 'shadow-[inset_0_-2px_0_0_var(--color-accent)]')}>
+                    {link.label}
+                  </span>
+                )}
+              </NavLink>
+            ))}
+          </nav>
         </header>
       </div>
-      <main className="mx-auto w-full max-w-6xl px-8 pb-20 pt-8">
+      <main className="mx-auto w-full max-w-6xl px-5 pb-20 pt-6 lg:px-8 lg:pt-8">
         <Outlet />
       </main>
     </div>
@@ -114,7 +114,7 @@ function IconToggle({
       aria-label={label}
       aria-pressed={pressed}
       className={cn(
-        'inline-flex h-8 w-8 items-center justify-center text-muted transition-colors duration-180 hover:text-fg',
+        'inline-flex h-11 w-11 items-center justify-center text-muted transition-colors duration-180 hover:text-fg lg:h-8 lg:w-8',
         pressed && 'text-fg',
       )}
     >

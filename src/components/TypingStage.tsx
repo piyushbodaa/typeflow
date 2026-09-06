@@ -1,4 +1,4 @@
-import { useEffect, useRef, type KeyboardEvent, type RefObject } from 'react'
+import { useEffect, useRef, type FormEvent, type KeyboardEvent, type RefObject } from 'react'
 import type { EngineSnapshot, WordState } from '../engine/types'
 import { cn } from '../lib/cn'
 
@@ -6,10 +6,17 @@ interface TypingStageProps {
   snapshot: EngineSnapshot
   inputRef: RefObject<HTMLInputElement | null>
   onKeyDown: (event: KeyboardEvent<HTMLInputElement>) => void
+  onInput: (event: FormEvent<HTMLInputElement>) => void
   onFocusClick: () => void
 }
 
-export function TypingStage({ snapshot, inputRef, onKeyDown, onFocusClick }: TypingStageProps) {
+export function TypingStage({
+  snapshot,
+  inputRef,
+  onKeyDown,
+  onInput,
+  onFocusClick,
+}: TypingStageProps) {
   const currentRef = useRef<HTMLSpanElement>(null)
   const scrollerRef = useRef<HTMLDivElement>(null)
 
@@ -32,14 +39,18 @@ export function TypingStage({ snapshot, inputRef, onKeyDown, onFocusClick }: Typ
         autoComplete="off"
         autoCorrect="off"
         spellCheck={false}
-        className="pointer-events-none absolute h-0 w-0 opacity-0"
+        inputMode="text"
+        enterKeyHint="done"
+        className="absolute inset-0 z-10 h-full w-full cursor-text opacity-0"
+        style={{ fontSize: 16 }}
         onKeyDown={onKeyDown}
+        onInput={onInput}
         value=""
         onChange={() => {}}
       />
       <div
         ref={scrollerRef}
-        className="stage h-[7.2rem] overflow-hidden font-mono text-[1.55rem] leading-[2.4rem] tracking-[0.01em]"
+        className="stage h-[6.6rem] overflow-hidden font-mono text-[1.25rem] leading-[2.2rem] tracking-[0.01em] lg:h-[7.2rem] lg:text-[1.55rem] lg:leading-[2.4rem]"
       >
         <div className="flex flex-wrap gap-x-3 gap-y-0">
           {snapshot.words.map((word, index) => (
