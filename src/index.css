@@ -20,6 +20,18 @@
   --duration-180: 180ms;
 }
 
+:root {
+  --hand-fill: #c9a890;
+  --hand-line: #8a6a52;
+  --hand-highlight: #ead5c2;
+  --hand-shade: #9a7860;
+  --hand-shadow: rgb(8 10 12 / 0.45);
+  --key-face: #1d2327;
+  --key-lip: #0b0e10;
+  --key-home: #242c31;
+  --chassis: #12171a;
+}
+
 html.light {
   --color-canvas: #f1eee8;
   --color-elev: #fcfaf6;
@@ -29,6 +41,15 @@ html.light {
   --color-heat: #d47a3c;
   --color-error: #b53a4c;
   --color-line: #ddd8d0;
+  --hand-fill: #e4d0bc;
+  --hand-line: #a07d64;
+  --hand-highlight: #f6ece3;
+  --hand-shade: #c8ad96;
+  --hand-shadow: rgb(40 32 24 / 0.18);
+  --key-face: #f7f3ec;
+  --key-lip: #d8d0c4;
+  --key-home: #fffaf3;
+  --chassis: #e7e1d6;
 }
 
 html,
@@ -150,10 +171,123 @@ body {
   color: var(--color-ink);
 }
 
+.hero-well {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  background:
+    radial-gradient(
+      ellipse 70% 55% at 50% 38%,
+      color-mix(in oklab, var(--color-accent) 11%, transparent),
+      transparent 68%
+    ),
+    var(--color-elev);
+}
+
+.hero-well::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--color-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-line) 1px, transparent 1px);
+  background-size: 64px 64px;
+  opacity: 0.22;
+  mask-image: radial-gradient(ellipse at 50% 40%, black 18%, transparent 72%);
+  pointer-events: none;
+}
+
+.hero-keyboard {
+  display: block;
+  width: 100%;
+  height: auto;
+  position: relative;
+}
+
+.hero-chassis {
+  fill: var(--chassis);
+  stroke: var(--color-line);
+  stroke-width: 1;
+}
+
+.hero-key-lip {
+  fill: var(--key-lip);
+}
+
+.hero-key-face {
+  fill: var(--key-face);
+  stroke: var(--color-line);
+  stroke-width: 1;
+  transition:
+    fill 200ms ease,
+    transform 200ms ease;
+}
+
+.hero-key.is-home .hero-key-face {
+  fill: var(--key-home);
+  stroke: color-mix(in oklab, var(--color-accent) 28%, var(--color-line));
+}
+
+.hero-key.is-pressed .hero-key-face,
+.hero-key.is-rest .hero-key-face {
+  fill: color-mix(in oklab, var(--color-accent) 32%, var(--key-face));
+  stroke: var(--color-accent);
+}
+
+.hero-key-label {
+  fill: var(--color-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+.hero-key.is-pressed .hero-key-label,
+.hero-key.is-rest .hero-key-label {
+  fill: var(--color-heat);
+}
+
+.hero-key-glow {
+  pointer-events: none;
+}
+
+.hero-palm {
+  fill: var(--hand-fill);
+  stroke: var(--hand-line);
+  stroke-width: 1.4;
+}
+
+.hero-palm-shade {
+  fill: var(--hand-shade);
+  opacity: 0.35;
+}
+
+.hero-hand-shadow {
+  fill: var(--hand-shadow);
+}
+
+.hero-cuff {
+  fill: var(--chassis);
+  stroke: var(--color-line);
+  stroke-width: 1;
+}
+
+.hero-finger {
+  transition: transform 200ms ease;
+  transform-box: fill-box;
+  transform-origin: 50% 90%;
+}
+
+.hero-finger.is-down {
+  transform: translateY(5px) rotate(1.8deg);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .caret,
   .current-rail::after {
     animation: none;
+  }
+  .hero-finger.is-down {
+    transform: none;
   }
   * {
     transition-duration: 0.01ms !important;

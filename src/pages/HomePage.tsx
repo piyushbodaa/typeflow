@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
+import { HeroKeyboard } from '../components/HeroKeyboard'
 import { Sparkline } from '../components/Sparkline'
-import { Wordmark } from '../components/Wordmark'
 import { lessonById } from '../data/lessons'
 import { useHistory } from '../hooks/useHistory'
 import { useProgress } from '../hooks/useProgress'
@@ -17,44 +17,59 @@ export function HomePage() {
 
   return (
     <div>
-      <section className="grid grid-cols-12 gap-x-12 gap-y-10">
+      <section className="hero-well">
+        <HeroKeyboard />
+        <p className="pb-5 text-center font-mono text-[10px] uppercase tracking-[0.28em] text-muted">
+          home row · asdf jkl;
+        </p>
+      </section>
+
+      <section className="mt-10 grid grid-cols-12 gap-x-12 gap-y-8">
         <div className="col-span-7">
-          <Wordmark size="lg" />
-          <p className="mt-8 font-mono text-[11px] uppercase tracking-[0.28em] text-accent">
+          <p className="font-mono text-[11px] uppercase tracking-[0.28em] text-accent">
             desktop keyboard trainer
           </p>
-          <h1 className="mt-4 max-w-xl text-[2.75rem] font-medium leading-[1.15] tracking-tight">
+          <h1 className="mt-3 max-w-xl text-[2.6rem] font-medium leading-[1.12] tracking-tight">
             Find the current.
           </h1>
-          <p className="mt-5 max-w-lg text-[17px] leading-7 text-muted">
-            You already type on a phone. Typeflow is the quiet desk for real keys — one minute of
-            focus, then a little faster than yesterday.
+          <p className="mt-4 max-w-lg text-[17px] leading-7 text-muted">
+            Two hands. Home row. A physical keyboard. Typeflow is the quiet desk for people who
+            already type on phones and want real speed.
           </p>
         </div>
-        <div className="col-span-5 flex flex-col justify-end gap-5">
+        <div className="col-span-5 flex flex-col justify-center gap-5">
           <Link to="/test?seconds=60&go=1" className="btn btn-primary w-full no-underline">
             Start 1-minute test
           </Link>
           <div className="flex flex-wrap gap-x-6 gap-y-2 font-mono text-sm">
-            <Link to="/test" className="text-muted no-underline transition-colors duration-180 hover:text-ink">
+            <Link
+              to="/test"
+              className="text-muted no-underline transition-colors duration-180 hover:text-ink"
+            >
               Practice
             </Link>
-            <Link to="/lessons" className="text-muted no-underline transition-colors duration-180 hover:text-ink">
+            <Link
+              to="/lessons"
+              className="text-muted no-underline transition-colors duration-180 hover:text-ink"
+            >
               Lessons
             </Link>
-            <Link to="/history" className="text-muted no-underline transition-colors duration-180 hover:text-ink">
+            <Link
+              to="/history"
+              className="text-muted no-underline transition-colors duration-180 hover:text-ink"
+            >
               History
             </Link>
           </div>
         </div>
       </section>
 
-      <div className="current-rail mt-14" />
+      <div className="current-rail mt-12" />
 
-      <section className="mt-0 grid grid-cols-4 border border-line">
+      <section className="grid grid-cols-4 border border-line">
         <StatCard label="last wpm" value={fmt(snap.lastWpm)} />
         <StatCard label="best wpm" value={fmt(snap.bestWpm)} accent />
-        <div className="border-r border-line bg-elev px-5 py-5 last:border-r-0">
+        <div className="border-r border-line bg-elev px-5 py-5">
           <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted">accuracy</p>
           <div className="mt-3 flex items-end justify-between gap-3">
             <p className="font-mono text-2xl tabular-nums text-ink">
@@ -72,9 +87,7 @@ export function HomePage() {
           <div className="mt-3 h-[2px] bg-line">
             <div
               className="h-[2px] bg-accent transition-[width] duration-180"
-              style={{
-                width: `${(snap.lessonsDone / snap.lessonsTotal) * 100}%`,
-              }}
+              style={{ width: `${(snap.lessonsDone / snap.lessonsTotal) * 100}%` }}
             />
           </div>
         </div>
@@ -116,9 +129,7 @@ export function HomePage() {
         </div>
 
         <div className="col-span-5">
-          <h2 className="mb-4 font-mono text-[11px] uppercase tracking-[0.22em] text-muted">
-            Desk
-          </h2>
+          <h2 className="mb-4 font-mono text-[11px] uppercase tracking-[0.22em] text-muted">Desk</h2>
           <div className="border border-line bg-elev">
             <SettingRow
               label="Theme"
