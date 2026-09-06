@@ -6,6 +6,7 @@ import words from '../data/words.json'
 import { lessonById, lessonStatus, nextLesson, PASS_ACCURACY } from '../data/lessons'
 import { mulberry32 } from '../engine/generate'
 import type { EngineSnapshot } from '../engine/types'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import { useHistory } from '../hooks/useHistory'
 import { useProgress } from '../hooks/useProgress'
 import { snapshotToResult } from '../lib/result'
@@ -20,6 +21,8 @@ export function LessonPlayerPage() {
   const { record } = useHistory()
   const [armed, setArmed] = useState(false)
   const beginRef = useRef<HTMLButtonElement>(null)
+
+  useDocumentTitle(lesson ? `${lesson.title} · typeflow` : 'Lessons · typeflow')
 
   const status = lesson ? lessonStatus(lesson.id, completed) : 'locked'
   const mode = useMemo(() => {
@@ -52,9 +55,12 @@ export function LessonPlayerPage() {
     onComplete: lesson && status !== 'locked' ? onComplete : undefined,
     idleNote: 'Type the passage. Pass at 95% accuracy to unlock the next lesson.',
     header: lesson ? (
-      <div className="mb-8">
+      <div className="mb-10">
+        <div className="rule mb-8" />
         <p className="kicker">Lesson {String(lesson.order).padStart(2, '0')}</p>
-        <h1 className="mt-2 text-2xl font-medium tracking-tight">{lesson.title}</h1>
+        <h1 className="mt-3 font-display text-[2.1rem] italic leading-tight tracking-tight">
+          {lesson.title}
+        </h1>
         <p className="mt-2 text-sm text-muted">{lesson.instruction}</p>
       </div>
     ) : null,
@@ -64,7 +70,8 @@ export function LessonPlayerPage() {
   if (status === 'locked') {
     return (
       <div className="max-w-lg">
-        <h1 className="text-2xl font-medium tracking-tight">This lesson is locked.</h1>
+        <div className="rule" />
+        <h1 className="mt-8 font-display text-[2.1rem] italic tracking-tight">This lesson is locked.</h1>
         <p className="mt-3 text-sm text-muted">Finish the previous one at 95% accuracy first.</p>
         <Link to="/lessons" className="btn mt-8 no-underline">
           Back to lessons
@@ -80,9 +87,9 @@ export function LessonPlayerPage() {
     return (
       <>
         {session.view}
-        <p className="mx-auto mb-6 max-w-xl font-mono text-sm">
+        <p className="mb-6 font-mono text-sm">
           {passed ? (
-            <span className="text-success">
+            <span className="text-fg">
               Passed. Accuracy {Math.round(session.snapshot.stats.accuracy)}%.
             </span>
           ) : (
@@ -105,7 +112,7 @@ export function LessonPlayerPage() {
                 ]
               : []),
             { label: 'Retry', onClick: session.restart, primary: !passed },
-            { label: 'Dashboard', onClick: () => navigate('/') },
+            { label: 'Back to hub', onClick: () => navigate('/') },
             { label: 'All lessons', onClick: () => navigate('/lessons') },
           ]}
         />
@@ -115,10 +122,13 @@ export function LessonPlayerPage() {
 
   if (!armed) {
     return (
-      <div className="max-w-xl">
-        <p className="kicker">Lesson {String(lesson.order).padStart(2, '0')}</p>
-        <h1 className="mt-3 text-2xl font-medium tracking-tight">{lesson.title}</h1>
-        <p className="mt-3 text-sm leading-6 text-muted">{lesson.instruction}</p>
+      <div>
+        <div className="rule" />
+        <p className="kicker mt-8">Lesson {String(lesson.order).padStart(2, '0')}</p>
+        <h1 className="mt-4 max-w-[16ch] font-display text-[clamp(2.4rem,5vw,4.2rem)] italic leading-[1.02] tracking-tight">
+          {lesson.title}
+        </h1>
+        <p className="mt-4 text-[15px] leading-7 text-muted">{lesson.instruction}</p>
         <p className="mt-6 text-sm text-muted">Pass at 95% accuracy. The clock waits on you.</p>
         <button
           ref={beginRef}

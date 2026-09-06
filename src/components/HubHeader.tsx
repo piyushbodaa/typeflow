@@ -1,12 +1,13 @@
 export function HubHeader() {
   return (
-    <header className="max-w-xl">
-      <p className="kicker">Desktop typing trainer</p>
-      <h1 className="mt-3 text-[2rem] font-medium leading-tight tracking-tight text-fg">
-        Practice with a real keyboard.
+    <header>
+      <div className="rule" />
+      <p className="kicker mt-7">Desktop trainer</p>
+      <h1 className="mt-4 max-w-[16ch] font-display text-[clamp(2.6rem,6vw,5rem)] italic leading-[0.92] tracking-[-0.025em] text-fg">
+        Sit down. Type the next line.
       </h1>
-      <p className="mt-3 text-[15px] leading-6 text-muted">
-        Timed tests, twelve sequential lessons, and local history. Nothing starts until you begin.
+      <p className="mt-5 max-w-[32rem] text-[17px] leading-7 text-muted">
+        Timed tests, twelve sequential lessons, and a local record. The clock waits until you begin.
       </p>
     </header>
   )

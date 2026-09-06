@@ -5,6 +5,7 @@ import { ResultsPanel } from '../components/ResultsPanel'
 import { useTypingSession } from '../components/TypingSession'
 import words from '../data/words.json'
 import type { EngineSnapshot, TimedSeconds, WordCount } from '../engine/types'
+import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import { useHistory } from '../hooks/useHistory'
 import { modeLabel } from '../lib/format'
 import { snapshotToResult } from '../lib/result'
@@ -34,6 +35,8 @@ export function TestPage() {
   const { record } = useHistory()
   const config = useMemo(() => ({ mode, wordBank: words }), [mode])
 
+  useDocumentTitle(`Test · typeflow`)
+
   useEffect(() => {
     if (params.get('go') === '1') setArmed(true)
   }, [params])
@@ -57,9 +60,12 @@ export function TestPage() {
     onComplete,
     idleNote: 'First keystroke starts the clock. Tab then Enter restarts.',
     header: (
-      <div className="mb-8">
+      <div className="mb-10">
+        <div className="rule mb-8" />
         <p className="kicker">{modeLabel(mode)}</p>
-        <h1 className="mt-2 text-2xl font-medium tracking-tight">Type when you are ready.</h1>
+        <h1 className="mt-3 font-display text-[2.1rem] italic leading-tight tracking-tight">
+          Type when you are ready.
+        </h1>
       </div>
     ),
   })
@@ -83,7 +89,7 @@ export function TestPage() {
           copyLabel={modeLabel(mode)}
           actions={[
             { label: 'Retry', onClick: session.restart, primary: true },
-            { label: 'Dashboard', onClick: () => navigate('/') },
+            { label: 'Back to hub', onClick: () => navigate('/') },
             { label: 'Lessons', onClick: () => navigate('/lessons') },
           ]}
         />
@@ -93,17 +99,19 @@ export function TestPage() {
 
   if (!armed) {
     return (
-      <div className="max-w-xl">
-        <p className="kicker">Practice</p>
-        <h1 className="mt-3 text-2xl font-medium tracking-tight">Choose a mode, then begin.</h1>
-        <p className="mt-3 text-sm leading-6 text-muted">
+      <div className="flex min-h-[72vh] flex-col">
+        <div className="rule" />
+        <p className="kicker mt-8">Practice</p>
+        <h1 className="mt-4 max-w-[16ch] font-display text-[clamp(2.4rem,5vw,4.2rem)] italic leading-[1.02] tracking-tight">
+          Choose a mode, then begin.
+        </h1>
+        <p className="mt-4 max-w-lg text-[15px] leading-7 text-muted">
           The clock does not start until you confirm. After that, the first keystroke starts the
           run.
         </p>
-        <div className="mt-8">
+        <div className="mt-10">
           <ModePicker mode={mode} onTimed={pickTime} onWords={pickWords} />
         </div>
-        <p className="mt-6 font-mono text-sm text-fg">{modeLabel(mode)}</p>
         <button
           ref={beginRef}
           type="button"
@@ -112,6 +120,9 @@ export function TestPage() {
         >
           Begin test
         </button>
+        <div className="mt-auto">
+          <div className="rule" />
+        </div>
       </div>
     )
   }

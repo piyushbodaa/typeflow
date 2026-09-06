@@ -5,18 +5,23 @@ import { cn } from '../lib/cn'
 
 export function LessonList({ completed }: { completed: string[] }) {
   return (
-    <ol className="panel overflow-hidden">
+    <ol>
       {LESSONS.map((lesson) => {
         const status = lessonStatus(lesson.id, completed)
         const inner = (
-          <div className="flex items-center gap-4 px-5 py-4">
-            <span className="w-8 shrink-0 font-mono text-[12px] tabular-nums text-muted">
+          <div className="flex items-center gap-5 py-4">
+            <span
+              className={cn(
+                'w-8 shrink-0 font-mono text-[12px] tabular-nums',
+                status === 'available' ? 'text-accent' : 'text-muted',
+              )}
+            >
               {String(lesson.order).padStart(2, '0')}
             </span>
             <div className="min-w-0 flex-1">
               <h2
                 className={cn(
-                  'text-[15px] font-medium tracking-tight',
+                  'text-[16px] font-medium tracking-tight',
                   status === 'locked' ? 'text-muted' : 'text-fg',
                 )}
               >
@@ -29,16 +34,16 @@ export function LessonList({ completed }: { completed: string[] }) {
         )
         if (status === 'locked') {
           return (
-            <li key={lesson.id} className="border-b border-border last:border-b-0">
-              <div className="opacity-60">{inner}</div>
+            <li key={lesson.id} className="border-t border-border">
+              <div className="opacity-55">{inner}</div>
             </li>
           )
         }
         return (
-          <li key={lesson.id} className="border-b border-border last:border-b-0">
+          <li key={lesson.id} className="border-t border-border">
             <Link
               to={`/lessons/${lesson.id}`}
-              className="block text-inherit no-underline transition-colors duration-180 hover:bg-bg"
+              className="block text-inherit no-underline transition-colors duration-180 hover:bg-elevated/40"
             >
               {inner}
             </Link>
@@ -52,7 +57,7 @@ export function LessonList({ completed }: { completed: string[] }) {
 function StatusMark({ status }: { status: LessonStatus }) {
   if (status === 'done') {
     return (
-      <span className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wider text-success">
+      <span className="inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wider text-fg">
         <Check size={14} strokeWidth={2} aria-hidden />
         Passed
       </span>

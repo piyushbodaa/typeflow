@@ -14,7 +14,7 @@ export function ModePicker({ mode, onTimed, onWords }: ModePickerProps) {
   return (
     <div className="flex flex-wrap items-center gap-8 font-mono text-sm">
       <div className="flex items-center gap-1.5" role="group" aria-label="Timed modes">
-        <span className="px-1.5 text-[11px] uppercase tracking-[0.12em] text-muted">Time</span>
+        <span className="px-1.5 text-[11px] uppercase tracking-[0.14em] text-muted">Time</span>
         {TIMES.map((seconds) => (
           <ModeChip
             key={seconds}
@@ -27,7 +27,7 @@ export function ModePicker({ mode, onTimed, onWords }: ModePickerProps) {
         ))}
       </div>
       <div className="flex items-center gap-1.5" role="group" aria-label="Word-count modes">
-        <span className="px-1.5 text-[11px] uppercase tracking-[0.12em] text-muted">Words</span>
+        <span className="px-1.5 text-[11px] uppercase tracking-[0.14em] text-muted">Words</span>
         {COUNTS.map((count) => (
           <ModeChip
             key={count}
@@ -61,10 +61,10 @@ function ModeChip({
       aria-pressed={selected}
       aria-label={label}
       className={cn(
-        'rounded-sm border px-2.5 py-1 text-muted transition-colors duration-180',
+        'px-2.5 py-1 text-muted transition-colors duration-180',
         selected
-          ? 'border-fg bg-elevated text-fg'
-          : 'border-transparent hover:border-border hover:text-fg',
+          ? 'bg-fg text-bg'
+          : 'hover:text-fg',
       )}
     >
       {children}

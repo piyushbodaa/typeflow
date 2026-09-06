@@ -57,7 +57,7 @@ export function useTypingSession({
         onChange={() => {}}
       />
     ) : (
-      <div className="mx-auto w-full max-w-[56rem]">
+      <div className="folio mx-auto flex min-h-[68vh] w-full flex-col justify-center">
         {snapshot.status !== 'running' ? header : null}
         <LiveHud stats={snapshot.stats} />
         <div className="mt-10">
@@ -68,7 +68,9 @@ export function useTypingSession({
             onFocusClick={focus}
           />
         </div>
-        {snapshot.status === 'idle' ? <div className="mt-6 text-sm text-muted">{idleNote}</div> : null}
+        {snapshot.status === 'idle' ? (
+          <div className="mt-8 text-sm text-muted">{idleNote}</div>
+        ) : null}
         {showKeyboard ? <KeyboardViz expected={snapshot.expectedKey} /> : null}
       </div>
     )

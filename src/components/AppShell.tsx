@@ -28,7 +28,7 @@ export function AppShell({
   onToggleSound,
 }: AppShellProps) {
   return (
-    <div className="min-h-screen bg-bg text-fg">
+    <div className="min-h-screen text-fg">
       <div
         className={cn(
           'border-b border-border transition-opacity duration-180',
@@ -37,7 +37,7 @@ export function AppShell({
       >
         <header className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-8">
           <Wordmark />
-          <nav className="flex items-center gap-6 text-[13px]">
+          <nav className="flex items-center gap-7 text-[13px] tracking-wide">
             {links.map((link) => (
               <NavLink
                 key={link.to}
@@ -50,12 +50,7 @@ export function AppShell({
                 }
               >
                 {({ isActive }) => (
-                  <span
-                    className={cn(
-                      'border-b pb-px',
-                      isActive ? 'border-fg' : 'border-transparent',
-                    )}
-                  >
+                  <span className={cn('pb-px', isActive && 'shadow-[inset_0_-2px_0_0_var(--color-accent)]')}>
                     {link.label}
                   </span>
                 )}
@@ -68,7 +63,7 @@ export function AppShell({
               pressed={settings.showKeyboard}
               onClick={onToggleKeyboard}
             >
-              <Keyboard size={16} strokeWidth={1.75} />
+              <Keyboard size={16} strokeWidth={1.6} />
             </IconToggle>
             <IconToggle
               label={settings.sound ? 'Mute key sound' : 'Enable key sound'}
@@ -76,9 +71,9 @@ export function AppShell({
               onClick={onToggleSound}
             >
               {settings.sound ? (
-                <Volume2 size={16} strokeWidth={1.75} />
+                <Volume2 size={16} strokeWidth={1.6} />
               ) : (
-                <VolumeX size={16} strokeWidth={1.75} />
+                <VolumeX size={16} strokeWidth={1.6} />
               )}
             </IconToggle>
             <IconToggle
@@ -86,15 +81,15 @@ export function AppShell({
               onClick={onToggleTheme}
             >
               {settings.theme === 'dark' ? (
-                <Sun size={16} strokeWidth={1.75} />
+                <Sun size={16} strokeWidth={1.6} />
               ) : (
-                <Moon size={16} strokeWidth={1.75} />
+                <Moon size={16} strokeWidth={1.6} />
               )}
             </IconToggle>
           </div>
         </header>
       </div>
-      <main className="mx-auto w-full max-w-6xl px-8 pb-20 pt-12">
+      <main className="mx-auto w-full max-w-6xl px-8 pb-20 pt-8">
         <Outlet />
       </main>
     </div>
@@ -119,8 +114,8 @@ function IconToggle({
       aria-label={label}
       aria-pressed={pressed}
       className={cn(
-        'inline-flex h-8 w-8 items-center justify-center rounded-sm text-muted transition-colors duration-180 hover:bg-elevated hover:text-fg',
-        pressed && 'bg-elevated text-fg',
+        'inline-flex h-8 w-8 items-center justify-center text-muted transition-colors duration-180 hover:text-fg',
+        pressed && 'text-fg',
       )}
     >
       {children}

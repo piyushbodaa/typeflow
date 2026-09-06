@@ -24,7 +24,7 @@ export function TypingStage({ snapshot, inputRef, onKeyDown, onFocusClick }: Typ
   }, [snapshot.caret.wordIndex, snapshot.caret.charIndex])
 
   return (
-    <div className="relative w-full" onClick={onFocusClick}>
+    <div className="relative w-full max-w-[66ch]" onClick={onFocusClick}>
       <input
         ref={inputRef}
         aria-label="Type here"
@@ -39,7 +39,7 @@ export function TypingStage({ snapshot, inputRef, onKeyDown, onFocusClick }: Typ
       />
       <div
         ref={scrollerRef}
-        className="h-[6.6rem] overflow-hidden font-mono text-[1.5rem] leading-[2.2rem] tracking-wide"
+        className="stage h-[7.2rem] overflow-hidden font-mono text-[1.55rem] leading-[2.4rem] tracking-[0.01em]"
       >
         <div className="flex flex-wrap gap-x-3 gap-y-0">
           {snapshot.words.map((word, index) => (
@@ -79,7 +79,7 @@ function Word({
           {caretIndex === i && <Caret blinking={blinking} />}
           <span
             className={cn(
-              cell.flag === 'pending' && (active ? 'text-fg/45' : 'text-muted'),
+              cell.flag === 'pending' && (active ? 'text-fg/40' : 'text-muted'),
               cell.flag === 'correct' && 'text-fg',
               cell.flag === 'incorrect' && 'char-incorrect',
             )}

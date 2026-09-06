@@ -168,6 +168,10 @@ export function nextLesson(id: string): Lesson | undefined {
   return LESSONS.find((l) => l.order === current.order + 1)
 }
 
+export function availableLesson(completed: string[]): Lesson | undefined {
+  return LESSONS.find((lesson) => lessonStatus(lesson.id, completed) === 'available')
+}
+
 export type LessonStatus = 'locked' | 'available' | 'done'
 
 export function lessonStatus(id: string, completed: string[]): LessonStatus {

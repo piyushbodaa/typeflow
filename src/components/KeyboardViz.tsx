@@ -22,7 +22,7 @@ export function KeyboardViz({ expected }: { expected: string }) {
   const shiftOn = needsShift(expected)
 
   return (
-    <div className="mt-12 select-none font-mono text-[11px] text-muted" aria-hidden>
+    <div className="mt-14 select-none font-mono text-[11px] text-muted" aria-hidden>
       <div className="flex flex-col items-center gap-1">
         <KeyRow keys={ROW1} active={phys} />
         <KeyRow keys={ROW2} active={phys} offset="ml-4" />
@@ -34,7 +34,7 @@ export function KeyboardViz({ expected }: { expected: string }) {
         <KeyRow keys={ROW4} active={phys} offset="ml-8" />
         <WideKey label="space" active={phys === ' '} width="w-64" />
       </div>
-      <p className="mt-4 text-center text-[10px] uppercase tracking-[0.12em] text-muted">
+      <p className="mt-4 text-center text-[10px] uppercase tracking-[0.14em] text-muted">
         Home row · P R M I · I M R P
       </p>
     </div>
@@ -58,7 +58,7 @@ function KeyRow({
         <div
           key={key}
           className={cn(
-            'flex h-8 w-8 flex-col items-center justify-center rounded-sm border border-border bg-elevated text-fg/80 transition-colors duration-180',
+            'flex h-8 w-8 flex-col items-center justify-center border border-border text-fg/80 transition-colors duration-180',
             active === key && 'border-fg bg-fg text-bg',
           )}
         >
@@ -78,7 +78,7 @@ function WideKey({ label, active, width }: { label: string; active: boolean; wid
   return (
     <div
       className={cn(
-        'flex h-8 items-center justify-center rounded-sm border border-border bg-elevated text-fg/70 transition-colors duration-180',
+        'flex h-8 items-center justify-center border border-border text-fg/70 transition-colors duration-180',
         width,
         active && 'border-fg bg-fg text-bg',
       )}

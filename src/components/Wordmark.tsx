@@ -6,8 +6,8 @@ export function Wordmark({ size = 'sm' }: { size?: 'sm' | 'lg' }) {
       to="/"
       className={
         size === 'lg'
-          ? 'font-mono text-2xl font-medium tracking-tight text-fg no-underline'
-          : 'font-mono text-[15px] font-medium tracking-tight text-fg no-underline'
+          ? 'font-display text-5xl italic leading-none tracking-tight text-fg no-underline'
+          : 'font-display text-[19px] italic leading-none tracking-tight text-fg no-underline'
       }
     >
       typeflow

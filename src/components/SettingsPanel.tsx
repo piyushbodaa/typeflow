@@ -15,12 +15,12 @@ export function SettingsPanel({
 }: SettingsPanelProps) {
   return (
     <section>
-      <h2 className="mb-3 kicker">Settings</h2>
-      <div className="panel">
+      <h2 className="kicker">Desk</h2>
+      <div className="mt-4">
         <SettingRow
           label="Theme"
-          value={settings.theme === 'dark' ? 'Dark' : 'Light'}
-          action={settings.theme === 'dark' ? 'Light' : 'Dark'}
+          value={settings.theme === 'dark' ? 'Carbon' : 'Ivory'}
+          action={settings.theme === 'dark' ? 'Ivory' : 'Carbon'}
           onClick={onToggleTheme}
         />
         <SettingRow
@@ -36,7 +36,7 @@ export function SettingsPanel({
           onClick={onToggleSound}
         />
       </div>
-      <p className="mt-3 text-xs leading-5 text-muted">
+      <p className="mt-4 text-[13px] leading-5 text-muted">
         Stored in this browser. Tab then Enter restarts a run after you begin.
       </p>
     </section>
@@ -55,9 +55,9 @@ function SettingRow({
   onClick: () => void
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-border px-5 py-4 last:border-b-0">
+    <div className="flex items-center justify-between gap-4 border-t border-border py-2.5">
       <div>
-        <p className="text-sm text-fg">{label}</p>
+        <p className="text-[15px] text-fg">{label}</p>
         <p className="mt-0.5 font-mono text-[11px] text-muted">{value}</p>
       </div>
       <button type="button" className="btn" onClick={onClick}>

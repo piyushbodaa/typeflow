@@ -25,7 +25,7 @@ export function Sparkline({ series, compact = false }: { series: number[]; compa
       height={height}
       viewBox={`0 0 ${width} ${height}`}
       aria-hidden
-      className="text-muted"
+      className="text-fg"
     >
       <polyline
         fill="none"
