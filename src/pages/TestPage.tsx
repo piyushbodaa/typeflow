@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { ModePills } from '../components/ModePills'
+import { ModePicker } from '../components/ModePicker'
 import { ResultsPanel } from '../components/ResultsPanel'
 import { useTypingSession } from '../components/TypingSession'
 import words from '../data/words.json'
@@ -58,10 +58,8 @@ export function TestPage() {
     idleNote: 'First keystroke starts the clock. Tab then Enter restarts.',
     header: (
       <div className="mb-8">
-        <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-accent">
-          {modeLabel(mode)}
-        </p>
-        <h1 className="mt-2 text-3xl font-medium tracking-tight">Type when you are ready.</h1>
+        <p className="kicker">{modeLabel(mode)}</p>
+        <h1 className="mt-2 text-2xl font-medium tracking-tight">Type when you are ready.</h1>
       </div>
     ),
   })
@@ -96,15 +94,16 @@ export function TestPage() {
   if (!armed) {
     return (
       <div className="max-w-xl">
-        <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-accent">practice</p>
-        <h1 className="mt-3 text-3xl font-medium tracking-tight">Choose a current, then begin.</h1>
+        <p className="kicker">Practice</p>
+        <h1 className="mt-3 text-2xl font-medium tracking-tight">Choose a mode, then begin.</h1>
         <p className="mt-3 text-sm leading-6 text-muted">
-          The clock does not start until you confirm. After that, the first keystroke is the gun.
+          The clock does not start until you confirm. After that, the first keystroke starts the
+          run.
         </p>
         <div className="mt-8">
-          <ModePills mode={mode} onTimed={pickTime} onWords={pickWords} />
+          <ModePicker mode={mode} onTimed={pickTime} onWords={pickWords} />
         </div>
-        <p className="mt-6 font-mono text-sm text-ink">{modeLabel(mode)}</p>
+        <p className="mt-6 font-mono text-sm text-fg">{modeLabel(mode)}</p>
         <button
           ref={beginRef}
           type="button"

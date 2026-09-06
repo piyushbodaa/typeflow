@@ -53,10 +53,8 @@ export function LessonPlayerPage() {
     idleNote: 'Type the passage. Pass at 95% accuracy to unlock the next lesson.',
     header: lesson ? (
       <div className="mb-8">
-        <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-accent">
-          lesson {String(lesson.order).padStart(2, '0')}
-        </p>
-        <h1 className="mt-2 text-3xl font-medium tracking-tight">{lesson.title}</h1>
+        <p className="kicker">Lesson {String(lesson.order).padStart(2, '0')}</p>
+        <h1 className="mt-2 text-2xl font-medium tracking-tight">{lesson.title}</h1>
         <p className="mt-2 text-sm text-muted">{lesson.instruction}</p>
       </div>
     ) : null,
@@ -82,13 +80,13 @@ export function LessonPlayerPage() {
     return (
       <>
         {session.view}
-        <p className="mb-6 font-mono text-sm">
+        <p className="mx-auto mb-6 max-w-xl font-mono text-sm">
           {passed ? (
-            <span className="text-accent">
+            <span className="text-success">
               Passed. Accuracy {Math.round(session.snapshot.stats.accuracy)}%.
             </span>
           ) : (
-            <span className="text-error">
+            <span className="text-danger">
               Need {PASS_ACCURACY}% to pass. You hit {Math.round(session.snapshot.stats.accuracy)}%.
             </span>
           )}
@@ -118,10 +116,8 @@ export function LessonPlayerPage() {
   if (!armed) {
     return (
       <div className="max-w-xl">
-        <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-accent">
-          lesson {String(lesson.order).padStart(2, '0')}
-        </p>
-        <h1 className="mt-3 text-3xl font-medium tracking-tight">{lesson.title}</h1>
+        <p className="kicker">Lesson {String(lesson.order).padStart(2, '0')}</p>
+        <h1 className="mt-3 text-2xl font-medium tracking-tight">{lesson.title}</h1>
         <p className="mt-3 text-sm leading-6 text-muted">{lesson.instruction}</p>
         <p className="mt-6 text-sm text-muted">Pass at 95% accuracy. The clock waits on you.</p>
         <button
