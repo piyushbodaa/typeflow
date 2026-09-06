@@ -3,8 +3,8 @@ import type { CreateEngineConfig, EngineSnapshot } from '../engine/types'
 import { useFocusMode } from '../hooks/useFocusMode'
 import { useTypingEngine } from '../hooks/useTypingEngine'
 import { KeyboardViz } from './KeyboardViz'
-import { StatsBar } from './StatsBar'
-import { TypingView } from './TypingView'
+import { LiveHud } from './LiveHud'
+import { TypingStage } from './TypingStage'
 
 interface TypingSessionOptions {
   config: CreateEngineConfig
@@ -57,11 +57,11 @@ export function useTypingSession({
         onChange={() => {}}
       />
     ) : (
-      <div>
+      <div className="mx-auto w-full max-w-[56rem]">
         {snapshot.status !== 'running' ? header : null}
-        <StatsBar stats={snapshot.stats} />
+        <LiveHud stats={snapshot.stats} />
         <div className="mt-10">
-          <TypingView
+          <TypingStage
             snapshot={snapshot}
             inputRef={inputRef}
             onKeyDown={onKeyDown}

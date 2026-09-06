@@ -36,29 +36,26 @@ export function ResultsPanel({ snapshot, copyLabel, actions }: ResultsPanelProps
   }
 
   return (
-    <section className="max-w-xl">
-      <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted">result</p>
-      <p className="mt-3 font-mono text-7xl font-medium tabular-nums tracking-tight text-accent">
+    <section className="mx-auto max-w-xl">
+      <p className="kicker">Result</p>
+      <p className="mt-3 font-mono text-7xl font-medium tabular-nums tracking-tight text-fg">
         {Math.round(stats.wpm)}
       </p>
-      <p className="mt-1 font-mono text-xs uppercase tracking-[0.2em] text-muted">wpm</p>
+      <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.12em] text-muted">WPM</p>
 
       <dl className="mt-10 grid grid-cols-2 gap-x-8 gap-y-5 font-mono text-sm sm:grid-cols-3">
-        <Item label="raw" value={Math.round(stats.rawWpm).toString()} />
-        <Item label="accuracy" value={`${Math.round(stats.accuracy)}%`} />
-        <Item
-          label="correct / incorrect / extra"
-          value={`${stats.correct} / ${stats.incorrect} / ${stats.extra}`}
-        />
+        <Item label="Raw" value={Math.round(stats.rawWpm).toString()} />
+        <Item label="Accuracy" value={`${Math.round(stats.accuracy)}%`} />
+        <Item label="Correct" value={stats.correct.toString()} />
+        <Item label="Incorrect" value={stats.incorrect.toString()} />
+        <Item label="Extra" value={stats.extra.toString()} />
         {consistency != null ? (
-          <Item label="consistency" value={`${Math.round(consistency)}%`} />
+          <Item label="Consistency" value={`${Math.round(consistency)}%`} />
         ) : null}
       </dl>
 
       <div className="mt-10">
-        <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
-          wpm over time
-        </p>
+        <p className="mb-3 kicker">WPM over time</p>
         <Sparkline series={wpmSeries} />
       </div>
 
@@ -87,8 +84,8 @@ export function ResultsPanel({ snapshot, copyLabel, actions }: ResultsPanelProps
 function Item({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <dt className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted">{label}</dt>
-      <dd className="mt-1 text-ink">{value}</dd>
+      <dt className="kicker">{label}</dt>
+      <dd className="mt-1 text-fg">{value}</dd>
     </div>
   )
 }
