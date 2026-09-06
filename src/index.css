@@ -263,6 +263,7 @@ html:not(.light) .ribbon-mark img {
 }
 
 .hub-peek-ribbon {
+  display: block;
   mix-blend-mode: multiply;
 }
 
