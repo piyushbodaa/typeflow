@@ -1,0 +1,74 @@
+@import "tailwindcss";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/500.css";
+@import "@fontsource/jetbrains-mono/600.css";
+
+@theme {
+  --color-canvas: #0b0d10;
+  --color-elev: #12151a;
+  --color-ink: #e8e6e3;
+  --color-muted: #8b8a86;
+  --color-accent: #f5a524;
+  --color-error: #e85d4c;
+  --color-line: #1e232b;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-sans: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+html.light {
+  --color-canvas: #f4f1ea;
+  --color-elev: #fffdf8;
+  --color-ink: #1a1916;
+  --color-muted: #6f6e6a;
+  --color-accent: #c47d12;
+  --color-error: #c44536;
+  --color-line: #e4dfd4;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.caret {
+  display: inline-block;
+  width: 2px;
+  height: 1.05em;
+  margin-right: -2px;
+  background: var(--color-accent);
+  vertical-align: -0.12em;
+  animation: caret-blink 1.1s step-end infinite;
+}
+
+.caret-solid {
+  animation: none;
+}
+
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caret {
+    animation: none;
+  }
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}
