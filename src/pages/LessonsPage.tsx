@@ -14,7 +14,8 @@ export function LessonsPage() {
         Lessons
       </h1>
       <p className="mt-4 max-w-xl text-[15px] leading-7 text-muted">
-        Unlocked in order. Pass at 95% accuracy. The 1-minute test does not wait for these.
+        All lessons are open. Hit 95% accuracy to mark one Passed — order is optional. The 1-minute
+        test does not wait for these.
       </p>
       <div className="mt-10 max-w-3xl">
         <LessonList completed={completed} />

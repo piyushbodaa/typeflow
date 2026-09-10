@@ -174,12 +174,10 @@ export function availableLesson(completed: string[]): Lesson | undefined {
 
 export type LessonStatus = 'locked' | 'available' | 'done'
 
+/** All lessons are open. Passed ones still show as done. */
 export function lessonStatus(id: string, completed: string[]): LessonStatus {
   const lesson = lessonById(id)
   if (!lesson) return 'locked'
   if (completed.includes(id)) return 'done'
-  if (lesson.order === 1) return 'available'
-  const prev = LESSONS.find((l) => l.order === lesson.order - 1)
-  if (prev && completed.includes(prev.id)) return 'available'
-  return 'locked'
+  return 'available'
 }
