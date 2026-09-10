@@ -35,7 +35,7 @@ export function TestPage() {
   const { record } = useHistory()
   const config = useMemo(() => ({ mode, wordBank: words }), [mode])
 
-  useDocumentTitle(`Test · typeflow`)
+  useDocumentTitle(`Test \u00b7 typeflow`)
 
   useEffect(() => {
     if (params.get('go') === '1') setArmed(true)
@@ -80,6 +80,11 @@ export function TestPage() {
     setArmed(false)
   }
 
+  function retry() {
+    // Same path as a clean session: reset engine + remount stage + restore focus.
+    session.restart()
+  }
+
   if (session.snapshot.status === 'finished') {
     return (
       <>
@@ -88,7 +93,7 @@ export function TestPage() {
           snapshot={session.snapshot}
           copyLabel={modeLabel(mode)}
           actions={[
-            { label: 'Retry', onClick: session.restart, primary: true },
+            { label: 'Retry', onClick: retry, primary: true },
             { label: 'Back to hub', onClick: () => navigate('/') },
             { label: 'Lessons', onClick: () => navigate('/lessons') },
           ]}

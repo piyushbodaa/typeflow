@@ -24,6 +24,8 @@ export function useTypingEngine({ config, sound = false, armed = true, onComplet
   const [snapshot, setSnapshot] = useState<EngineSnapshot>(() =>
     engineRef.current!.getSnapshot(),
   )
+  /** Bumped on every restart so the stage can remount with a clean input/focus. */
+  const [sessionKey, setSessionKey] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
   const tabArmed = useRef(false)
   const finishedRef = useRef(false)
@@ -36,9 +38,12 @@ export function useTypingEngine({ config, sound = false, armed = true, onComplet
   const restart = useCallback(() => {
     finishedRef.current = false
     tabArmed.current = false
+    keydownHandled.current = false
     engineRef.current = createEngine(configRef.current)
     setSnapshot(engineRef.current.getSnapshot())
-    inputRef.current?.focus()
+    setSessionKey((k) => k + 1)
+    // Focus after the remounted TypingStage input is in the DOM - not the
+    // finished-state phantom input that is about to unmount.
   }, [])
 
   useEffect(() => {
@@ -75,15 +80,20 @@ export function useTypingEngine({ config, sound = false, armed = true, onComplet
         return
       }
       if (event.key === 'Enter' && tabArmed.current) {
+        // Capture phase + stopPropagation so a focused Retry button does not
+        // also fire its click (which would double-restart).
         event.preventDefault()
+        event.stopPropagation()
         tabArmed.current = false
         restart()
-      } else if (event.key !== 'Enter') {
+        return
+      }
+      if (event.key !== 'Enter') {
         tabArmed.current = false
       }
     }
-    window.addEventListener('keydown', onWindowKey)
-    return () => window.removeEventListener('keydown', onWindowKey)
+    window.addEventListener('keydown', onWindowKey, true)
+    return () => window.removeEventListener('keydown', onWindowKey, true)
   }, [restart, armed])
 
   const ingest = useCallback(
@@ -176,5 +186,5 @@ export function useTypingEngine({ config, sound = false, armed = true, onComplet
     inputRef.current?.focus()
   }, [])
 
-  return { snapshot, restart, inputRef, onKeyDown, onInput, focus }
+  return { snapshot, restart, sessionKey, inputRef, onKeyDown, onInput, focus }
 }

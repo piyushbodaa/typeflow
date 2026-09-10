@@ -26,7 +26,7 @@ export function useTypingSession({
   idleNote,
   header,
 }: TypingSessionOptions) {
-  const { snapshot, restart, inputRef, onKeyDown, onInput, focus } = useTypingEngine({
+  const { snapshot, restart, sessionKey, inputRef, onKeyDown, onInput, focus } = useTypingEngine({
     config,
     sound,
     armed,
@@ -40,12 +40,19 @@ export function useTypingSession({
     return () => setFocused(false)
   }, [snapshot.status, setFocused, armed])
 
+  // Restore focus whenever a live session is shown - including after Retry /
+  // Tab+Enter, which remount the stage (sessionKey) with status back to idle.
+  // Fresh Begin / go=1 also lands here via armed flipping true.
   useEffect(() => {
-    if (armed) focus()
-  }, [focus, armed])
+    if (!armed || snapshot.status === 'finished') return
+    focus()
+  }, [focus, armed, snapshot.status, sessionKey])
 
   const running = snapshot.status === 'running'
 
+  // Finished: keep a focusable sink so Tab+Enter still works if the window
+  // listener is somehow skipped, but do not steal focus from ResultsPanel.
+  // Live: remount TypingStage on each sessionKey so the input is brand-new.
   const view =
     snapshot.status === 'finished' ? (
       <input
@@ -60,9 +67,11 @@ export function useTypingSession({
         onInput={onInput}
         value=""
         onChange={() => {}}
+        tabIndex={-1}
       />
     ) : (
       <div
+        key={sessionKey}
         className="folio mx-auto flex w-full flex-col lg:min-h-[68vh] lg:justify-center"
         style={
           running && viewportHeight > 0
