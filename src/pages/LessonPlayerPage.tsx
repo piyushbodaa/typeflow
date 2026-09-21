@@ -4,6 +4,7 @@ import { ResultsPanel } from '../components/ResultsPanel'
 import { useTypingSession } from '../components/TypingSession'
 import words from '../data/words.json'
 import { lessonById, lessonStatus, nextLesson, PASS_ACCURACY } from '../data/lessons'
+import { poemCredit } from '../data/poems'
 import { mulberry32 } from '../engine/generate'
 import type { EngineSnapshot } from '../engine/types'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
@@ -25,10 +26,12 @@ export function LessonPlayerPage() {
   useDocumentTitle(lesson ? `${lesson.title} · typeflow` : 'Lessons · typeflow')
 
   const status = lesson ? lessonStatus(lesson.id, completed) : 'locked'
-  const mode = useMemo(() => {
+  const run = useMemo(() => {
     if (!lesson) return null
     return lesson.build(mulberry32(Date.now() % 2147483647))
   }, [lesson])
+  const mode = run?.mode ?? null
+  const credit = run?.poem ? poemCredit(run.poem) : null
 
   useEffect(() => {
     setArmed(false)
@@ -62,6 +65,7 @@ export function LessonPlayerPage() {
           {lesson.title}
         </h1>
         <p className="mt-2 text-sm text-muted">{lesson.instruction}</p>
+        {credit ? <p className="mt-2 font-mono text-[12px] text-muted">{credit}</p> : null}
       </div>
     ) : null,
   })
@@ -129,6 +133,7 @@ export function LessonPlayerPage() {
           {lesson.title}
         </h1>
         <p className="mt-4 text-[15px] leading-7 text-muted">{lesson.instruction}</p>
+        {credit ? <p className="mt-3 font-mono text-[12px] text-muted">{credit}</p> : null}
         <p className="mt-6 text-sm text-muted">Pass at 95% accuracy. The clock waits on you.</p>
         <button
           ref={beginRef}

@@ -1,6 +1,6 @@
 # typeflow
 
-A typing trainer for desktop and phone. The home page is a dashboard. Tests and lessons start only after you confirm. No accounts. No server.
+A typing trainer for desktop and phone where you type poetry, not random words: every test and every lesson from six onward is a stanza from a well-loved poem (Shakespeare, Tagore, Dickinson, Khayyam, Basho, Kabir and more - all public domain, credited on screen). The home page is a dashboard. Tests and lessons start only after you confirm. No accounts. No server.
 
 ## Requirements
 
@@ -21,9 +21,9 @@ Open the printed local URL (usually `http://localhost:5173`). You land on the da
 | Path | What it is |
 |---|---|
 | `/` | Dashboard — start test, lessons, history, snapshot stats, settings. No live test. |
-| `/test` | Timed and word-count practice. Choose a mode, then **Begin**. |
+| `/test` | Timed and word-count practice over poems (or random words with `?source=words`). Choose a mode, then **Begin**. |
 | `/test?seconds=60&go=1` | Confirmed 1-minute test (used by the dashboard CTA). First keystroke starts the clock. |
-| `/lessons` | Twelve sequential drills. |
+| `/lessons` | Twelve lessons: five key drills, then poems. |
 | `/lessons/:id` | Lesson player. **Begin lesson**, then type. Pass at 95% accuracy. |
 | `/history` | Last 50 local results. |
 | `/about` | Desktop-only, WPM formula, privacy. |
@@ -60,3 +60,7 @@ Settings, lesson progress, and the last 50 results live in `localStorage` under 
 - Confirm a run: **Begin** (Enter on the focused button)
 - Start the clock: first keystroke, after you have begun
 - Restart: <kbd>Tab</kbd> then <kbd>Enter</kbd>
+
+## Poems
+
+The bank lives in `src/data/poems.ts`. Add a stanza there and it joins the rotation; a check at import time rejects any character a US keyboard cannot type (use straight quotes and plain hyphens, no em dashes).

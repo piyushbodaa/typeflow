@@ -8,8 +8,13 @@ import type { EngineSnapshot, TimedSeconds, WordCount } from '../engine/types'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import { useHistory } from '../hooks/useHistory'
 import { modeLabel } from '../lib/format'
+import { poemStream } from '../data/poems'
+import { mulberry32 } from '../engine/generate'
+import type { EngineMode } from '../engine/types'
 import { snapshotToResult } from '../lib/result'
 import { useSettings } from '../hooks/useTheme'
+
+export type TextSource = 'poems' | 'words'
 
 function parseMode(
   params: URLSearchParams,
@@ -30,10 +35,19 @@ export function TestPage() {
   const navigate = useNavigate()
   const [params, setParams] = useSearchParams()
   const mode = useMemo(() => parseMode(params), [params])
+  const source: TextSource = params.get('source') === 'words' ? 'words' : 'poems'
+  // Poems are typed in order, so they become a custom run sized to the chosen mode; random
+  // words keep the engine's own top-up behaviour. History still records the picked mode.
+  const engineMode = useMemo<EngineMode>(() => {
+    if (source === 'words') return mode
+    const rng = mulberry32(Date.now() % 2147483647)
+    if (mode.kind === 'words') return { kind: 'custom', words: poemStream(rng, mode.count).slice(0, mode.count) }
+    return { kind: 'custom', words: poemStream(rng, mode.seconds * 5), seconds: mode.seconds }
+  }, [mode, source])
   const [armed, setArmed] = useState(() => params.get('go') === '1')
   const beginRef = useRef<HTMLButtonElement>(null)
   const { record } = useHistory()
-  const config = useMemo(() => ({ mode, wordBank: words }), [mode])
+  const config = useMemo(() => ({ mode: engineMode, wordBank: words }), [engineMode])
 
   useDocumentTitle(`Test \u00b7 typeflow`)
 
@@ -71,12 +85,19 @@ export function TestPage() {
   })
 
   function pickTime(seconds: TimedSeconds) {
-    setParams({ seconds: String(seconds) })
+    setParams({ seconds: String(seconds), source })
     setArmed(false)
   }
 
   function pickWords(count: WordCount) {
-    setParams({ words: String(count) })
+    setParams({ words: String(count), source })
+    setArmed(false)
+  }
+
+  function pickSource(next: TextSource) {
+    const keep: Record<string, string> =
+      mode.kind === 'words' ? { words: String(mode.count) } : { seconds: String(mode.seconds) }
+    setParams({ ...keep, source: next })
     setArmed(false)
   }
 
@@ -111,11 +132,12 @@ export function TestPage() {
           Choose a mode, then begin.
         </h1>
         <p className="mt-4 max-w-lg text-[15px] leading-7 text-muted">
-          The clock does not start until you confirm. After that, the first keystroke starts the
-          run. A physical keyboard is better; glass still counts.
+          You type poetry here, not random words: stanzas from well-loved poems across the world,
+          one after another. The clock does not start until you confirm. After that, the first
+          keystroke starts the run.
         </p>
         <div className="mt-10">
-          <ModePicker mode={mode} onTimed={pickTime} onWords={pickWords} />
+          <ModePicker mode={mode} source={source} onTimed={pickTime} onWords={pickWords} onSource={pickSource} />
         </div>
         <button
           ref={beginRef}

@@ -14,8 +14,9 @@ export function LessonsPage() {
         Lessons
       </h1>
       <p className="mt-4 max-w-xl text-[15px] leading-7 text-muted">
-        All lessons are open. Hit 95% accuracy to mark one Passed — order is optional. The 1-minute
-        test does not wait for these.
+        Five short drills teach the keys. From lesson six, every line you type is a stanza from a
+        poem - a different one each time you begin. All lessons are open. Hit 95% accuracy to mark
+        one Passed; order is optional. The 1-minute test does not wait for these.
       </p>
       <div className="mt-10 max-w-3xl">
         <LessonList completed={completed} />

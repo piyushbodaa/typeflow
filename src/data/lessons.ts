@@ -1,27 +1,46 @@
-import difficult from './difficult-words.json'
-import quotes from './quotes.json'
 import words from './words.json'
+import {
+  ENGLISH_POEMS,
+  FULL_POEMS,
+  POEMS,
+  WORLD_POEMS,
+  pickPoem,
+  poemById,
+  poemStream,
+  poemTokens,
+  type Poem,
+} from './poems'
 import { generateFromCharset, pickWords, tokenize, wordsUsingCharset } from '../engine/generate'
 import type { EngineMode } from '../engine/types'
+
+/** What one attempt at a lesson types, plus the poem it came from when there is one. */
+export interface LessonRun {
+  mode: EngineMode
+  poem?: Poem
+}
 
 export interface Lesson {
   id: string
   order: number
   title: string
   instruction: string
-  build: (rng: () => number) => EngineMode
+  build: (rng: () => number) => LessonRun
 }
+
+// The first five lessons teach the keys, so they are limited to a few letters and cannot be
+// poetry. They are kept short. From lesson six on, every line is a stanza from poems.ts.
 
 const HOME_KEYS = 'asdfjkl;'
 const HOME_ROW = 'asdfghjkl;'
 const REACH = 'asdfjkl;eriu'
 const TOP = 'qwertyuiop'
 const BOTTOM = 'zxcvbnm'
+const DRILL_LENGTH = 24
 
 const HOME_WORDS = [
   'a','as','add','ads','alas','all','ask','asks','dad','sad','fall','falls','flask','flasks',
   'salad','salsa','lass','lads','fad','fads','alfalfa','lad','hall','halls','dash','slash',
-  'gala','flag','flags','glad','glass','flask','salad','asks','fall','all',
+  'gala','flag','flags','glad','glass',
 ]
 
 const REACH_WORDS = [
@@ -30,29 +49,47 @@ const REACH_WORDS = [
   'usual','reuse','safer','raised','failed','desire','serial','unused','refuse','ladder',
 ]
 
-const SHIFT_WORDS = tokenize(
-  'The Quick brown Fox jumps. Keep Caps honest. Shift left and Right. Type A Name like Ada and Alan.',
-)
-
-const PUNCT_WORDS = tokenize(
-  "Wait, really? Yes; it's time. Don't stop: type \"flow\" well. Hello, world!",
-)
-
-const NUMBER_WORDS = tokenize(
-  'room 12 seats 4 and 8. Meet at 3:00. Add 10 plus 25 minus 7. Year 2026 counts 365 days.',
-)
-
-const MIXED_BANK = [
-  ...words.slice(0, 200),
-  "it's","don't","can't","that's","I'll","you're",
-  '12','30','100','3.14','2026',
-  'Hello','Typeflow','Shift',
-  "wait,","yes.","go!",
-]
-
 function mix(preferred: string[], fallback: string[], count: number, rng: () => number): string[] {
   const bank = preferred.length >= 8 ? preferred : preferred.concat(fallback)
   return pickWords(bank, count, rng)
+}
+
+function drill(words: string[]): LessonRun {
+  return { mode: { kind: 'custom', words } }
+}
+
+function stanza(poem: Poem): LessonRun {
+  return { mode: { kind: 'custom', words: poemTokens(poem) }, poem }
+}
+
+const byIds = (ids: string[]) => ids.map((id) => poemById.get(id)!).filter(Boolean)
+
+/** Poems whose lines lean on capitals - every line starts with one, and some capitalise nouns. */
+const CAPITAL_POEMS = byIds([
+  'the-tyger', 'auguries-of-innocence', 'ozymandias', 'kubla-khan', 'rubaiyat-book-of-verses',
+  'rubaiyat-moving-finger', 'o-captain', 'because-i-could-not-stop', 'bazaars-of-hyderabad',
+])
+
+/** Poems thick with commas, dashes, semicolons, quotes, question and exclamation marks. */
+const PUNCTUATION_POEMS = byIds([
+  'hope', 'how-do-i-love-thee', 'o-captain', 'endymion', 'ulysses', 'remember', 'the-raven',
+  'if-end', 'rubaiyat-book-of-verses', 'kabir-moon', 'gitanjali-35',
+])
+
+/** "Sonnet 18, 1609." - titles and years, so the number row gets a workout that still reads. */
+function datedTitles(rng: () => number): string[] {
+  const dated = POEMS.filter((p) => p.year)
+  const seen = new Set<string>()
+  const lines: string[] = []
+  let guard = 0
+  while (lines.length < 10 && guard < 100) {
+    guard += 1
+    const p = pickPoem(rng, dated)
+    if (seen.has(p.title)) continue
+    seen.add(p.title)
+    lines.push(`${p.title}, ${p.year}.`)
+  }
+  return tokenize(lines.join(' '))
 }
 
 export const LESSONS: Lesson[] = [
@@ -60,28 +97,22 @@ export const LESSONS: Lesson[] = [
     id: 'home-row',
     order: 1,
     title: 'Home row keys',
-    instruction: 'Rest on asdf jkl; and type the groups as they come.',
-    build: (rng) => ({ kind: 'custom', words: generateFromCharset(HOME_KEYS, 40, rng, 4, 5) }),
+    instruction: 'Rest on asdf jkl; and type the groups as they come. Short drill, then the poems begin.',
+    build: (rng) => drill(generateFromCharset(HOME_KEYS, DRILL_LENGTH, rng, 4, 5)),
   },
   {
     id: 'home-row-words',
     order: 2,
     title: 'Home row words',
     instruction: 'Same home-row posture, now with real words.',
-    build: (rng) => ({
-      kind: 'custom',
-      words: mix(wordsUsingCharset(HOME_WORDS, HOME_ROW), HOME_WORDS, 40, rng),
-    }),
+    build: (rng) => drill(mix(wordsUsingCharset(HOME_WORDS, HOME_ROW), HOME_WORDS, DRILL_LENGTH, rng)),
   },
   {
     id: 'reach',
     order: 3,
     title: 'Reach keys: e r i u',
     instruction: 'Keep home-row anchors and reach for e, r, i, and u.',
-    build: (rng) => ({
-      kind: 'custom',
-      words: mix(wordsUsingCharset(REACH_WORDS, REACH), REACH_WORDS, 40, rng),
-    }),
+    build: (rng) => drill(mix(wordsUsingCharset(REACH_WORDS, REACH), REACH_WORDS, DRILL_LENGTH, rng)),
   },
   {
     id: 'top-row',
@@ -90,8 +121,8 @@ export const LESSONS: Lesson[] = [
     instruction: 'Stretch to qwertyuiop without leaving the home row for long.',
     build: (rng) => {
       const filtered = wordsUsingCharset(words, TOP)
-      const generated = generateFromCharset(TOP, 20, rng, 3, 5)
-      return { kind: 'custom', words: mix(filtered.concat(generated), generated, 40, rng) }
+      const generated = generateFromCharset(TOP, 12, rng, 3, 5)
+      return drill(mix(filtered.concat(generated), generated, DRILL_LENGTH, rng))
     },
   },
   {
@@ -101,58 +132,58 @@ export const LESSONS: Lesson[] = [
     instruction: 'Drop to zxcvbnm, then return to home row.',
     build: (rng) => {
       const filtered = wordsUsingCharset(words, BOTTOM + HOME_ROW)
-      const generated = generateFromCharset(BOTTOM, 16, rng, 3, 5)
-      return { kind: 'custom', words: mix(filtered.concat(generated), generated, 36, rng) }
+      const generated = generateFromCharset(BOTTOM + HOME_ROW, 12, rng, 3, 5)
+      return drill(mix(filtered.concat(generated), generated, DRILL_LENGTH, rng))
     },
   },
   {
     id: 'shift',
     order: 6,
-    title: 'Shift and capital letters',
-    instruction: 'Hold Shift with the opposite pinky, then type the letter.',
-    build: () => ({ kind: 'custom', words: SHIFT_WORDS.concat(SHIFT_WORDS) }),
+    title: 'Capital letters',
+    instruction: 'Every line of a poem starts with a capital. Hold Shift with the opposite pinky, then type the letter.',
+    build: (rng) => stanza(pickPoem(rng, CAPITAL_POEMS)),
   },
   {
     id: 'punct',
     order: 7,
     title: 'Punctuation',
-    instruction: 'Type commas, periods, quotes, and the rest without looking down.',
-    build: () => ({ kind: 'custom', words: PUNCT_WORDS.concat(PUNCT_WORDS) }),
+    instruction: 'Commas, dashes, semicolons, and quotes, in lines that were written to be read aloud.',
+    build: (rng) => stanza(pickPoem(rng, PUNCTUATION_POEMS)),
   },
   {
     id: 'numbers',
     order: 8,
     title: 'Numbers',
-    instruction: 'Reach the number row, then drop back to asdf jkl;.',
-    build: () => ({ kind: 'custom', words: NUMBER_WORDS.concat(NUMBER_WORDS) }),
+    instruction: 'Poems and the years they were published. Reach the number row, then drop back to asdf jkl;.',
+    build: (rng) => drill(datedTitles(rng)),
   },
   {
-    id: 'common',
+    id: 'world',
     order: 9,
-    title: 'Common English words',
-    instruction: 'A short run of the words you actually type every day.',
-    build: (rng) => ({ kind: 'custom', words: pickWords(words, 50, rng) }),
+    title: 'Poems of the world',
+    instruction: 'A stanza from India, Persia, China, Japan, or Europe, read in English.',
+    build: (rng) => stanza(pickPoem(rng, WORLD_POEMS)),
   },
   {
-    id: 'difficult',
+    id: 'english',
     order: 10,
-    title: 'Difficult words',
-    instruction: 'Slow down. Accuracy still has to land at 95%.',
-    build: (rng) => ({ kind: 'custom', words: pickWords(difficult, 30, rng) }),
+    title: 'Poems in English',
+    instruction: 'A stanza from the English-language canon. Slow down; accuracy still has to land at 95%.',
+    build: (rng) => stanza(pickPoem(rng, ENGLISH_POEMS)),
   },
   {
-    id: 'quotes',
+    id: 'whole-poem',
     order: 11,
-    title: 'Short quotes',
-    instruction: 'Capitals and punctuation, in complete lines.',
-    build: () => ({ kind: 'custom', words: quotes.flatMap((q) => tokenize(q)) }),
+    title: 'A whole poem',
+    instruction: 'Start to finish, one complete poem. Capitals and punctuation, in complete lines.',
+    build: (rng) => stanza(pickPoem(rng, FULL_POEMS)),
   },
   {
     id: 'graduation',
     order: 12,
-    title: 'Mixed graduation test',
-    instruction: 'Sixty seconds. Mix of words, numbers, and punctuation. Pass at 95% accuracy.',
-    build: (rng) => ({ kind: 'custom', words: pickWords(MIXED_BANK, 250, rng), seconds: 60 }),
+    title: 'Graduation',
+    instruction: 'Sixty seconds of poetry, stanza after stanza. Pass at 95% accuracy.',
+    build: (rng) => ({ mode: { kind: 'custom', words: poemStream(rng, 400), seconds: 60 } }),
   },
 ]
 
