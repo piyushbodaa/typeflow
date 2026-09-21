@@ -1,4 +1,6 @@
+import type { ReactNode } from 'react'
 import type { TimedSeconds, WordCount } from '../engine/types'
+import type { TextSource } from '../pages/TestPage'
 import { cn } from '../lib/cn'
 
 const TIMES: TimedSeconds[] = [15, 30, 60, 120]
@@ -6,13 +8,24 @@ const COUNTS: WordCount[] = [10, 25, 50, 100]
 
 interface ModePickerProps {
   mode: { kind: 'timed'; seconds: TimedSeconds } | { kind: 'words'; count: WordCount }
+  source: TextSource
   onTimed: (seconds: TimedSeconds) => void
   onWords: (count: WordCount) => void
+  onSource: (source: TextSource) => void
 }
 
-export function ModePicker({ mode, onTimed, onWords }: ModePickerProps) {
+export function ModePicker({ mode, source, onTimed, onWords, onSource }: ModePickerProps) {
   return (
     <div className="flex flex-col gap-4 font-mono text-sm sm:flex-row sm:flex-wrap sm:items-center sm:gap-8">
+      <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Text source">
+        <span className="px-1.5 text-[11px] uppercase tracking-[0.14em] text-muted">Text</span>
+        <ModeChip selected={source === 'poems'} onClick={() => onSource('poems')} label="Poems">
+          poems
+        </ModeChip>
+        <ModeChip selected={source === 'words'} onClick={() => onSource('words')} label="Random words">
+          words
+        </ModeChip>
+      </div>
       <div className="flex flex-wrap items-center gap-1.5" role="group" aria-label="Timed modes">
         <span className="px-1.5 text-[11px] uppercase tracking-[0.14em] text-muted">Time</span>
         {TIMES.map((seconds) => (
@@ -52,7 +65,7 @@ function ModeChip({
   selected: boolean
   onClick: () => void
   label: string
-  children: number
+  children: ReactNode
 }) {
   return (
     <button

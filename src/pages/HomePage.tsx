@@ -32,8 +32,10 @@ export function HomePage() {
           </Link>
         </p>
       ) : null}
-      <p className="text-[13px] leading-5 text-muted">
-        A physical keyboard is best. You can still practice here.
+      <p className="max-w-xl text-[15px] leading-7 text-muted">
+        No random words here. Everything you type is a stanza from a well-loved poem - Shakespeare
+        and Tagore, Dickinson and Khayyam, Basho and Kabir. A physical keyboard is best; glass
+        still counts.
       </p>
       <div className="flex flex-col gap-8 lg:flex-row lg:flex-wrap lg:items-end lg:gap-12">
         <RibbonMark />
