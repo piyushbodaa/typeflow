@@ -49,7 +49,7 @@ No environment variables. No backend.
 
 ## Data and privacy
 
-Settings, lesson progress, and the last 50 results live in `localStorage` under `typeflow:*`. Clearing site data wipes them. Nothing is sent anywhere.
+Settings, lesson progress, poem rotation, and the last 50 results live in `localStorage` under `typeflow:*`. Clearing site data wipes them. Nothing is sent anywhere.
 
 ## WPM
 
@@ -64,3 +64,5 @@ Settings, lesson progress, and the last 50 results live in `localStorage` under 
 ## Poems
 
 The bank lives in `src/data/poems.ts`. Add a stanza there and it joins the rotation; a check at import time rejects any character a US keyboard cannot type (use straight quotes and plain hyphens, no em dashes).
+
+Poem practice remembers passages across visits and lessons. Unseen poems in each lesson’s pool come first; after the pool is exhausted, the least recently seen returns. **Fresh passage** and Tab then Enter generate a new lesson attempt. The first five lessons remain short key drills; Numbers practices poem titles and dates.

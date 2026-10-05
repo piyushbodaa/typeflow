@@ -12,6 +12,7 @@ interface TypingSessionOptions {
   sound: boolean
   showKeyboard: boolean
   armed?: boolean
+  onRestart?: () => void
   onComplete?: (snapshot: EngineSnapshot) => void
   idleNote?: ReactNode
   header?: ReactNode
@@ -23,6 +24,7 @@ export function useTypingSession({
   showKeyboard,
   armed = true,
   onComplete,
+  onRestart,
   idleNote,
   header,
 }: TypingSessionOptions) {
@@ -31,6 +33,7 @@ export function useTypingSession({
     sound,
     armed,
     onComplete,
+    onRestart,
   })
   const { setFocused } = useFocusMode()
   const viewportHeight = useVisualViewport()

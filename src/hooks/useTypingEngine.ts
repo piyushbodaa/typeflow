@@ -7,10 +7,11 @@ interface Options {
   config: CreateEngineConfig
   sound?: boolean
   armed?: boolean
+  onRestart?: () => void
   onComplete?: (snapshot: EngineSnapshot) => void
 }
 
-export function useTypingEngine({ config, sound = false, armed = true, onComplete }: Options) {
+export function useTypingEngine({ config, sound = false, armed = true, onComplete, onRestart }: Options) {
   const configKey = JSON.stringify(config.mode)
   const engineRef = useRef<Engine | null>(null)
   const prevKey = useRef(configKey)
@@ -35,7 +36,10 @@ export function useTypingEngine({ config, sound = false, armed = true, onComplet
   onCompleteRef.current = onComplete
   const keydownHandled = useRef(false)
 
-  const restart = useCallback(() => {
+  const onRestartRef = useRef(onRestart)
+  onRestartRef.current = onRestart
+
+  const reset = useCallback(() => {
     finishedRef.current = false
     tabArmed.current = false
     keydownHandled.current = false
@@ -46,11 +50,16 @@ export function useTypingEngine({ config, sound = false, armed = true, onComplet
     // finished-state phantom input that is about to unmount.
   }, [])
 
+  const restart = useCallback(() => {
+    if (onRestartRef.current) onRestartRef.current()
+    else reset()
+  }, [reset])
+
   useEffect(() => {
     if (prevKey.current === configKey) return
     prevKey.current = configKey
-    restart()
-  }, [configKey, restart])
+    reset()
+  }, [configKey, reset])
 
   useEffect(() => {
     if (snapshot.status !== 'running') return

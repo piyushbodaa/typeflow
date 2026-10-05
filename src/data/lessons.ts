@@ -9,6 +9,7 @@ import {
   poemStream,
   poemTokens,
   type Poem,
+  type PoemPicker,
 } from './poems'
 import { generateFromCharset, pickWords, tokenize, wordsUsingCharset } from '../engine/generate'
 import type { EngineMode } from '../engine/types'
@@ -24,7 +25,7 @@ export interface Lesson {
   order: number
   title: string
   instruction: string
-  build: (rng: () => number) => LessonRun
+  build: (rng: () => number, pick?: PoemPicker) => LessonRun
 }
 
 // The first five lessons teach the keys, so they are limited to a few letters and cannot be
@@ -141,14 +142,14 @@ export const LESSONS: Lesson[] = [
     order: 6,
     title: 'Capital letters',
     instruction: 'Every line of a poem starts with a capital. Hold Shift with the opposite pinky, then type the letter.',
-    build: (rng) => stanza(pickPoem(rng, CAPITAL_POEMS)),
+    build: (rng, pick = pickPoem) => stanza(pick(rng, CAPITAL_POEMS)),
   },
   {
     id: 'punct',
     order: 7,
     title: 'Punctuation',
     instruction: 'Commas, dashes, semicolons, and quotes, in lines that were written to be read aloud.',
-    build: (rng) => stanza(pickPoem(rng, PUNCTUATION_POEMS)),
+    build: (rng, pick = pickPoem) => stanza(pick(rng, PUNCTUATION_POEMS)),
   },
   {
     id: 'numbers',
@@ -162,28 +163,28 @@ export const LESSONS: Lesson[] = [
     order: 9,
     title: 'Poems of the world',
     instruction: 'A stanza from India, Persia, China, Japan, or Europe, read in English.',
-    build: (rng) => stanza(pickPoem(rng, WORLD_POEMS)),
+    build: (rng, pick = pickPoem) => stanza(pick(rng, WORLD_POEMS)),
   },
   {
     id: 'english',
     order: 10,
     title: 'Poems in English',
     instruction: 'A stanza from the English-language canon. Slow down; accuracy still has to land at 95%.',
-    build: (rng) => stanza(pickPoem(rng, ENGLISH_POEMS)),
+    build: (rng, pick = pickPoem) => stanza(pick(rng, ENGLISH_POEMS)),
   },
   {
     id: 'whole-poem',
     order: 11,
     title: 'A whole poem',
     instruction: 'Start to finish, one complete poem. Capitals and punctuation, in complete lines.',
-    build: (rng) => stanza(pickPoem(rng, FULL_POEMS)),
+    build: (rng, pick = pickPoem) => stanza(pick(rng, FULL_POEMS)),
   },
   {
     id: 'graduation',
     order: 12,
     title: 'Graduation',
     instruction: 'Sixty seconds of poetry, stanza after stanza. Pass at 95% accuracy.',
-    build: (rng) => ({ mode: { kind: 'custom', words: poemStream(rng, 400), seconds: 60 } }),
+    build: (rng, pick) => ({ mode: { kind: 'custom', words: poemStream(rng, 400, POEMS, pick), seconds: 60 } }),
   },
 ]
 

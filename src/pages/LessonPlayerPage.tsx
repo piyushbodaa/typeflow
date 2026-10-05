@@ -4,6 +4,7 @@ import { ResultsPanel } from '../components/ResultsPanel'
 import { useTypingSession } from '../components/TypingSession'
 import words from '../data/words.json'
 import { lessonById, lessonStatus, nextLesson, PASS_ACCURACY } from '../data/lessons'
+import { createPoemRotation } from '../lib/poemRotation'
 import { poemCredit } from '../data/poems'
 import { mulberry32 } from '../engine/generate'
 import type { EngineSnapshot } from '../engine/types'
@@ -26,10 +27,16 @@ export function LessonPlayerPage() {
   useDocumentTitle(lesson ? `${lesson.title} · typeflow` : 'Lessons · typeflow')
 
   const status = lesson ? lessonStatus(lesson.id, completed) : 'locked'
-  const run = useMemo(() => {
+  const [attempt, setAttempt] = useState(0)
+  const freshRun = useMemo(() => {
     if (!lesson) return null
-    return lesson.build(mulberry32(Date.now() % 2147483647))
-  }, [lesson])
+    const rotation = createPoemRotation()
+    return { run: lesson.build(mulberry32((Date.now() + attempt) % 2147483647), rotation.pick), rotation }
+  }, [lesson, attempt])
+  const run = freshRun?.run
+  useEffect(() => {
+    if (armed) freshRun?.rotation.remember()
+  }, [armed, freshRun])
   const mode = run?.mode ?? null
   const credit = run?.poem ? poemCredit(run.poem) : null
 
@@ -55,6 +62,7 @@ export function LessonPlayerPage() {
     sound: settings.sound,
     showKeyboard: settings.showKeyboard,
     armed: armed && status !== 'locked',
+    onRestart: () => setAttempt((value) => value + 1),
     onComplete: lesson && status !== 'locked' ? onComplete : undefined,
     idleNote: 'Type the passage. Pass at 95% accuracy to unlock the next lesson.',
     header: lesson ? (
@@ -115,7 +123,7 @@ export function LessonPlayerPage() {
                   },
                 ]
               : []),
-            { label: 'Retry', onClick: session.restart, primary: !passed },
+            { label: 'Fresh passage', onClick: session.restart, primary: !passed },
             { label: 'Back to hub', onClick: () => navigate('/') },
             { label: 'All lessons', onClick: () => navigate('/lessons') },
           ]}

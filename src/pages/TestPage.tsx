@@ -8,6 +8,7 @@ import type { EngineSnapshot, TimedSeconds, WordCount } from '../engine/types'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import { useHistory } from '../hooks/useHistory'
 import { modeLabel } from '../lib/format'
+import { createPoemRotation } from '../lib/poemRotation'
 import { poemStream } from '../data/poems'
 import { mulberry32 } from '../engine/generate'
 import type { EngineMode } from '../engine/types'
@@ -38,13 +39,22 @@ export function TestPage() {
   const source: TextSource = params.get('source') === 'words' ? 'words' : 'poems'
   // Poems are typed in order, so they become a custom run sized to the chosen mode; random
   // words keep the engine's own top-up behaviour. History still records the picked mode.
-  const engineMode = useMemo<EngineMode>(() => {
-    if (source === 'words') return mode
-    const rng = mulberry32(Date.now() % 2147483647)
-    if (mode.kind === 'words') return { kind: 'custom', words: poemStream(rng, mode.count).slice(0, mode.count) }
-    return { kind: 'custom', words: poemStream(rng, mode.seconds * 5), seconds: mode.seconds }
-  }, [mode, source])
+  const [attempt, setAttempt] = useState(0)
+  const passage = useMemo(() => {
+    const rotation = createPoemRotation()
+    const build = (): EngineMode => {
+      if (source === 'words') return mode
+      const rng = mulberry32((Date.now() + attempt) % 2147483647)
+      if (mode.kind === 'words') return { kind: 'custom', words: poemStream(rng, mode.count, undefined, rotation.pick).slice(0, mode.count) }
+      return { kind: 'custom', words: poemStream(rng, mode.seconds * 5, undefined, rotation.pick), seconds: mode.seconds }
+    }
+    return { mode: build(), rotation }
+  }, [mode, source, attempt])
+  const engineMode = passage.mode
   const [armed, setArmed] = useState(() => params.get('go') === '1')
+  useEffect(() => {
+    if (armed && source === 'poems') passage.rotation.remember()
+  }, [armed, source, passage])
   const beginRef = useRef<HTMLButtonElement>(null)
   const { record } = useHistory()
   const config = useMemo(() => ({ mode: engineMode, wordBank: words }), [engineMode])
@@ -71,6 +81,7 @@ export function TestPage() {
     sound: settings.sound,
     showKeyboard: settings.showKeyboard,
     armed,
+    onRestart: source === 'poems' ? () => setAttempt((value) => value + 1) : undefined,
     onComplete,
     idleNote: 'First keystroke starts the clock. Tab then Enter restarts. Tap the line to summon the keyboard.',
     header: (

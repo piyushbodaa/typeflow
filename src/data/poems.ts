@@ -782,17 +782,23 @@ export function poemCredit(poem: Poem): string {
   return `${poem.title} - ${poem.poet} (${where}${tr})`
 }
 
+export type PoemPicker = (rng: () => number, from?: Poem[]) => Poem
+
 export function pickPoem(rng: () => number, from: Poem[] = POEMS): Poem {
   return from[Math.floor(rng() * from.length)] ?? POEMS[0]!
 }
 
 /** Poems shuffled and joined until there are at least `minTokens` tokens - for timed runs. */
-export function poemStream(rng: () => number, minTokens: number, from: Poem[] = POEMS): string[] {
+export function poemStream(rng: () => number, minTokens: number, from: Poem[] = POEMS, pick?: PoemPicker): string[] {
   const out: string[] = []
   let order: Poem[] = []
   while (out.length < minTokens) {
-    if (order.length === 0) order = shuffle(from, rng)
-    out.push(...poemTokens(order.pop()!))
+    if (pick) {
+      out.push(...poemTokens(pick(rng, from)))
+    } else {
+      if (order.length === 0) order = shuffle(from, rng)
+      out.push(...poemTokens(order.pop()!))
+    }
   }
   return out
 }
