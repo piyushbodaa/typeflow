@@ -1,3 +1,4 @@
+import { resultGroup } from '../lib/coaching'
 import { Link } from 'react-router-dom'
 import { lessonById } from '../data/lessons'
 import { formatWhen, modeLabel } from '../lib/format'
@@ -27,7 +28,7 @@ export function HistoryTable({ results }: { results: TestResult[] }) {
             <th className="pb-3 font-normal">Mode</th>
             <th className="w-24 pb-3 font-normal">WPM</th>
             <th className="w-24 pb-3 font-normal">Raw</th>
-            <th className="w-24 pb-3 font-normal">Acc</th>
+            <th className="w-24 pb-3 font-normal">First try</th>
           </tr>
         </thead>
         <tbody>
@@ -36,10 +37,11 @@ export function HistoryTable({ results }: { results: TestResult[] }) {
               <td className="py-3.5 text-muted">{formatWhen(row.at)}</td>
               <td className="py-3.5 font-sans text-fg">
                 {modeLabel(row.mode, row.lessonId ? lessonById(row.lessonId)?.title : undefined)}
+                <p className="mt-1 text-[11px] text-muted">{resultGroup(row)}</p>
               </td>
               <td className="py-3.5 tabular-nums text-fg">{Math.round(row.wpm)}</td>
               <td className="py-3.5 tabular-nums text-muted">{Math.round(row.rawWpm)}</td>
-              <td className="py-3.5 tabular-nums text-muted">{Math.round(row.accuracy)}%</td>
+              <td className="py-3.5 tabular-nums text-muted">{row.firstAccuracy == null ? 'Legacy' : `${Math.round(row.firstAccuracy)}%`}</td>
             </tr>
           ))}
         </tbody>

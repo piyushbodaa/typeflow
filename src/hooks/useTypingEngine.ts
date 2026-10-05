@@ -7,11 +7,12 @@ interface Options {
   config: CreateEngineConfig
   sound?: boolean
   armed?: boolean
+  onRestart?: () => void
   onComplete?: (snapshot: EngineSnapshot) => void
 }
 
-export function useTypingEngine({ config, sound = false, armed = true, onComplete }: Options) {
-  const configKey = JSON.stringify(config.mode)
+export function useTypingEngine({ config, sound = false, armed = true, onComplete, onRestart }: Options) {
+  const configKey = JSON.stringify({ mode: config.mode, guided: config.guided, seed: config.seed })
   const engineRef = useRef<Engine | null>(null)
   const prevKey = useRef(configKey)
   const configRef = useRef(config)
@@ -27,7 +28,6 @@ export function useTypingEngine({ config, sound = false, armed = true, onComplet
   /** Bumped on every restart so the stage can remount with a clean input/focus. */
   const [sessionKey, setSessionKey] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
-  const tabArmed = useRef(false)
   const finishedRef = useRef(false)
   const soundRef = useRef(sound)
   soundRef.current = sound
@@ -35,9 +35,11 @@ export function useTypingEngine({ config, sound = false, armed = true, onComplet
   onCompleteRef.current = onComplete
   const keydownHandled = useRef(false)
 
-  const restart = useCallback(() => {
+  const onRestartRef = useRef(onRestart)
+  onRestartRef.current = onRestart
+
+  const reset = useCallback(() => {
     finishedRef.current = false
-    tabArmed.current = false
     keydownHandled.current = false
     engineRef.current = createEngine(configRef.current)
     setSnapshot(engineRef.current.getSnapshot())
@@ -46,11 +48,16 @@ export function useTypingEngine({ config, sound = false, armed = true, onComplet
     // finished-state phantom input that is about to unmount.
   }, [])
 
+  const restart = useCallback(() => {
+    if (onRestartRef.current) onRestartRef.current()
+    else reset()
+  }, [reset])
+
   useEffect(() => {
     if (prevKey.current === configKey) return
     prevKey.current = configKey
-    restart()
-  }, [configKey, restart])
+    reset()
+  }, [configKey, reset])
 
   useEffect(() => {
     if (snapshot.status !== 'running') return
@@ -74,22 +81,10 @@ export function useTypingEngine({ config, sound = false, armed = true, onComplet
   useEffect(() => {
     if (!armed) return
     const onWindowKey = (event: globalThis.KeyboardEvent) => {
-      if (event.key === 'Tab') {
-        event.preventDefault()
-        tabArmed.current = true
-        return
-      }
-      if (event.key === 'Enter' && tabArmed.current) {
-        // Capture phase + stopPropagation so a focused Retry button does not
-        // also fire its click (which would double-restart).
+      if (event.altKey && event.key.toLowerCase() === 'r') {
         event.preventDefault()
         event.stopPropagation()
-        tabArmed.current = false
         restart()
-        return
-      }
-      if (event.key !== 'Enter') {
-        tabArmed.current = false
       }
     }
     window.addEventListener('keydown', onWindowKey, true)
@@ -116,19 +111,9 @@ export function useTypingEngine({ config, sound = false, armed = true, onComplet
       const engine = engineRef.current
       if (!engine || !armed) return
 
-      if (event.key === 'Tab') {
-        event.preventDefault()
-        tabArmed.current = true
-        return
-      }
-      if (event.key === 'Enter') {
-        event.preventDefault()
-        if (tabArmed.current) restart()
-        tabArmed.current = false
-        return
-      }
+      if (event.key === 'Tab') return
+      if (event.key === 'Enter') { event.preventDefault(); ingest([' ']); return }
 
-      tabArmed.current = false
       if (event.ctrlKey || event.metaKey || event.altKey) return
       if (event.key === 'Unidentified' || event.key === 'Process') return
 
@@ -150,7 +135,7 @@ export function useTypingEngine({ config, sound = false, armed = true, onComplet
         ingest([event.key])
       }
     },
-    [restart, armed, ingest],
+    [armed, ingest],
   )
 
   const onInput = useCallback(
@@ -169,6 +154,7 @@ export function useTypingEngine({ config, sound = false, armed = true, onComplet
       }
 
       const type = native.inputType ?? ''
+      if (type === 'insertFromPaste' || type === 'insertFromDrop') { el.value = ''; return }
       if (type.startsWith('delete')) {
         ingest(['Backspace'])
         el.value = ''

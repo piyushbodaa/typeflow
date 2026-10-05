@@ -1,3 +1,5 @@
+import { ProgressReview } from '../components/ProgressReview'
+import { BackupControls } from '../components/BackupControls'
 import { HistoryTable } from '../components/HistoryTable'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
 import { useHistory } from '../hooks/useHistory'
@@ -17,6 +19,8 @@ export function HistoryPage() {
       <div className="mt-10">
         <HistoryTable results={results} />
       </div>
+      <ProgressReview results={results} />
+      <BackupControls />
       <div className="rule mt-12" />
     </div>
   )

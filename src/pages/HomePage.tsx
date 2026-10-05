@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom'
+import { ProgressReview } from '../components/ProgressReview'
+import { ComfortControls } from '../components/ComfortControls'
 import { HubHeader } from '../components/HubHeader'
 import { PrimaryActions } from '../components/PrimaryActions'
 import { RibbonMark } from '../components/RibbonMark'
@@ -23,6 +25,10 @@ export function HomePage() {
   return (
     <div className="flex flex-col gap-8">
       <HubHeader />
+      <div className="coaching-card">
+        <p className="kicker">Your daily ritual</p>
+        <div className="mt-3 flex flex-wrap items-end justify-between gap-5"><div><h2 className="font-display text-3xl italic">A little rhythm. A beautiful poem.</h2><p className="mt-3 max-w-xl text-sm text-muted">Warm up, give your weak keys some care, then settle into poetry. Three, five, or ten minutes for yourself.</p></div><Link to="/daily" className="btn btn-primary no-underline">Start daily practice →</Link></div>
+      </div>
       <PrimaryActions />
       {next ? (
         <p className="text-[15px]">
@@ -33,9 +39,7 @@ export function HomePage() {
         </p>
       ) : null}
       <p className="max-w-xl text-[15px] leading-7 text-muted">
-        No random words here. Everything you type is a stanza from a well-loved poem - Shakespeare
-        and Tagore, Dickinson and Khayyam, Basho and Kabir. A physical keyboard is best; glass
-        still counts.
+        Poetry is at the heart of Typeflow: Shakespeare and Tagore, Dickinson and Khayyam, Basho and Kabir. Short key drills build the foundations; optional word practice lets you change pace. A physical keyboard is best; glass still counts.
       </p>
       <div className="flex flex-col gap-8 lg:flex-row lg:flex-wrap lg:items-end lg:gap-12">
         <RibbonMark />
@@ -44,6 +48,7 @@ export function HomePage() {
         </div>
       </div>
 
+      <ProgressReview results={results} />
       <section className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-12">
         <div className="lg:col-span-7">
           <div className="mb-4 flex items-baseline justify-between">
@@ -69,7 +74,7 @@ export function HomePage() {
                   </span>
                   <span className="font-mono text-sm tabular-nums text-fg">{Math.round(row.wpm)}</span>
                   <span className="font-mono text-sm tabular-nums text-muted">
-                    {Math.round(row.accuracy)}%
+                    {row.firstAccuracy == null ? '—' : `${Math.round(row.firstAccuracy)}%`}
                   </span>
                 </li>
               ))}
@@ -78,6 +83,7 @@ export function HomePage() {
         </div>
 
         <div className="lg:col-span-5">
+          <div className="mb-6"><ComfortControls includeStyle /></div>
           <SettingsPanel
             settings={settings}
             onToggleTheme={toggleTheme}

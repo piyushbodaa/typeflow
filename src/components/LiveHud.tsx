@@ -11,11 +11,11 @@ export function LiveHud({ stats }: { stats: LiveStats }) {
   return (
     <div
       className="flex flex-wrap gap-x-8 gap-y-2 font-mono text-sm tabular-nums"
-      aria-live="polite"
+      aria-label="Live typing statistics"
     >
       <Stat label="WPM" value={Math.round(stats.wpm).toString()} />
       <Stat label="Raw" value={Math.round(stats.rawWpm).toString()} />
-      <Stat label="Acc" value={`${Math.round(stats.accuracy)}%`} />
+      <Stat label="First try" value={`${Math.round(stats.firstAccuracy)}%`} />
       {remaining ? <Stat label="Left" value={remaining} /> : null}
     </div>
   )

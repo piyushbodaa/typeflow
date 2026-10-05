@@ -63,6 +63,13 @@ export function createEngine(config: CreateEngineConfig): Engine {
   let incorrect = 0
   let extra = 0
   let missed = 0
+  let firstCorrect = 0
+  let attempts = 0
+  let attempted = new Set<string>()
+  let keyStats: EngineSnapshot['keyStats'] = {}
+  let pairErrors: Record<string, number> = {}
+  let previousAt: number | null = null
+  let refillIndex = 0
   let errorMap: Record<string, number> = {}
   let wpmSeries: number[] = []
   let lastSampleSec = 0
@@ -75,7 +82,16 @@ export function createEngine(config: CreateEngineConfig): Engine {
     if (config.mode.kind !== 'timed' && !(config.mode.kind === 'custom' && config.mode.seconds != null)) {
       return
     }
-    if (config.mode.kind === 'custom') return
+    if (config.mode.kind === 'custom') {
+      if (words.length - wordIndex >= TOP_UP_WHEN || config.mode.words.length === 0) return
+      const more: WordState[] = []
+      for (let i = 0; i < TOP_UP_BY; i++) {
+        more.push(toWordState(config.mode.words[refillIndex % config.mode.words.length]!))
+        refillIndex++
+      }
+      words = words.concat(more)
+      return
+    }
     if (words.length - wordIndex >= TOP_UP_WHEN) return
     const more = pickWords(bank, TOP_UP_BY, rng).map(toWordState)
     words = words.concat(more)
@@ -122,17 +138,47 @@ export function createEngine(config: CreateEngineConfig): Engine {
     lastSampleSec = sec
   }
 
-  function applyChar(key: string) {
+  function attempt(expected: string, key: string, position: string, now: number) {
+    const stats = keyStats[expected] ?? { attempts: 0, errors: 0, totalMs: 0, intervals: 0 }
+    stats.attempts++
+    const error = expected !== key
+    if (error) {
+      stats.errors++
+      bumpError(expected)
+      const word = currentWord()
+      const previous = word && filledCount(word) > 0 ? word.chars[filledCount(word) - 1]?.expected : ''
+      if (previous) {
+        const pair = previous + expected
+        pairErrors[pair] = (pairErrors[pair] ?? 0) + 1
+      }
+    }
+    if (previousAt !== null && now > previousAt && now - previousAt < 3000) {
+      stats.totalMs += now - previousAt
+      stats.intervals++
+    }
+    keyStats[expected] = stats
+    if (!attempted.has(position)) {
+      attempted.add(position)
+      attempts++
+      if (!error) firstCorrect++
+    }
+    previousAt = now
+  }
+
+  function applyChar(key: string, now: number) {
     const word = currentWord()
     if (!word || word.committed) return
+    if (config.guided && word.chars.some((cell) => cell.flag === 'incorrect')) return
     const filled = filledCount(word)
     if (filled >= word.chars.length) {
       word.extras = word.extras.concat(key)
       extra += 1
+      attempts++
       return
     }
     const cell = word.chars[filled]
     if (!cell) return
+    attempt(cell.expected, key, `${wordIndex}:${filled}`, now)
     cell.typed = key
     if (key === cell.expected) {
       cell.flag = 'correct'
@@ -140,12 +186,21 @@ export function createEngine(config: CreateEngineConfig): Engine {
     } else {
       cell.flag = 'incorrect'
       incorrect += 1
-      bumpError(cell.expected)
     }
   }
 
   function applyBackspace() {
-    const word = currentWord()
+    let word = currentWord()
+    if (word && filledCount(word) === 0 && wordIndex > 0) {
+      wordIndex--
+      word = currentWord()
+      if (word) {
+        word.committed = false
+        for (const cell of word.chars) {
+          if (cell.flag === 'pending') { missed = Math.max(0, missed - 1); incorrect = Math.max(0, incorrect - 1) }
+        }
+      }
+    }
     if (!word || word.committed) return
     if (word.extras.length > 0) {
       word.extras = word.extras.slice(0, -1)
@@ -167,11 +222,14 @@ export function createEngine(config: CreateEngineConfig): Engine {
     if (!word || word.committed) return
     const typedSomething = filledCount(word) > 0 || word.extras.length > 0
     if (!typedSomething) return
-    for (const cell of word.chars) {
+    if (config.guided && (filledCount(word) < word.chars.length || word.chars.some((cell) => cell.flag === 'incorrect') || word.extras.length)) return
+    for (const [index, cell] of word.chars.entries()) {
       if (cell.flag === 'pending') {
         missed += 1
         incorrect += 1
         bumpError(cell.expected)
+        const position = `${wordIndex}:${index}`
+        if (!attempted.has(position)) { attempted.add(position); attempts++ }
       }
     }
     word.committed = true
@@ -225,7 +283,12 @@ export function createEngine(config: CreateEngineConfig): Engine {
       words,
       caret: caretPos(),
       expectedKey: expectedKey(),
+      keyStats,
+      pairErrors,
       stats: {
+        firstAccuracy: attempts ? firstCorrect / attempts * 100 : 100,
+        attempts,
+        firstCorrect,
         wpm: computeWpm(correct, elapsedMs),
         rawWpm: computeRawWpm(correct, incorrect, extra, elapsedMs),
         accuracy: computeAccuracy(correct, incorrect, extra),
@@ -255,6 +318,13 @@ export function createEngine(config: CreateEngineConfig): Engine {
     incorrect = 0
     extra = 0
     missed = 0
+    firstCorrect = 0
+    attempts = 0
+    attempted = new Set()
+    keyStats = {}
+    pairErrors = {}
+    previousAt = null
+    refillIndex = 0
     errorMap = {}
     wpmSeries = []
     lastSampleSec = 0
@@ -266,6 +336,9 @@ export function createEngine(config: CreateEngineConfig): Engine {
     },
     handleKey(key, now) {
       if (status === 'finished') return snapshot(now)
+      const cap = durationMs(config.mode)
+      if (startedAt != null && cap != null && now - startedAt >= cap) { finish(now); return snapshot(now) }
+      sampleThrough(now)
       if (key === 'Backspace') {
         if (status === 'idle') return snapshot(now)
         applyBackspace()
@@ -283,7 +356,10 @@ export function createEngine(config: CreateEngineConfig): Engine {
       }
       if (!isPrintableKey(key)) return snapshot(now)
       startIfNeeded(now)
-      applyChar(key)
+      applyChar(key, now)
+      const target = targetWordCount(config.mode)
+      const word = currentWord()
+      if (target != null && wordIndex === target - 1 && word && filledCount(word) === word.chars.length && (!config.guided || word.chars.every((cell) => cell.flag === 'correct'))) commitWord()
       checkFinish(now)
       return snapshot(now)
     },

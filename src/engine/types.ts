@@ -23,6 +23,9 @@ export interface WordState {
 }
 
 export interface LiveStats {
+  firstAccuracy: number
+  attempts: number
+  firstCorrect: number
   wpm: number
   rawWpm: number
   accuracy: number
@@ -42,6 +45,8 @@ export interface EngineSnapshot {
   expectedKey: string
   stats: LiveStats
   wpmSeries: number[]
+  keyStats: Record<string, { attempts: number; errors: number; totalMs: number; intervals: number }>
+  pairErrors: Record<string, number>
   errorMap: Record<string, number>
   startedAt: number | null
   finishedAt: number | null
@@ -52,6 +57,7 @@ export interface CreateEngineConfig {
   mode: EngineMode
   wordBank: string[]
   seed?: number
+  guided?: boolean
 }
 
 export interface Engine {

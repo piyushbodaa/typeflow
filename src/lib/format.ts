@@ -1,7 +1,7 @@
 import type { EngineMode } from '../engine/types'
 
 export function formatCopyResult(wpm: number, accuracy: number, label: string): string {
-  return `${Math.round(wpm)} WPM · ${Math.round(accuracy)}% accuracy · ${label} · typeflow`
+  return `${Math.round(wpm)} WPM · ${Math.round(accuracy)}% first-attempt accuracy · ${label} · typeflow`
 }
 
 export function modeLabel(mode: EngineMode, lessonTitle?: string): string {

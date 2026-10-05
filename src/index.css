@@ -255,6 +255,23 @@ html:not(.light) .ribbon-mark img {
   max-width: 66ch;
 }
 
+.practice-session {
+  max-width: 52rem;
+}
+
+@media (min-width: 1024px) {
+  .practice-session {
+    min-height: calc(100svh - 9rem);
+    justify-content: center;
+    padding-block: 2rem;
+  }
+
+  .practice-session-running {
+    min-height: 100svh;
+  }
+}
+
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -282,3 +299,19 @@ html:not(.light) .ribbon-mark img {
     scroll-behavior: auto !important;
   }
 }
+
+.practice-select {
+  border: 1px solid var(--color-border);
+  background: var(--color-elevated);
+  color: var(--color-fg);
+  padding: .45rem .65rem;
+  border-radius: 2px;
+}
+.practice-link { color: var(--color-fg); cursor: pointer; text-decoration: none; padding-block: .5rem; }
+.practice-link:hover { text-decoration: underline; text-underline-offset: 4px; }
+.comfort-popover { position: absolute; right: 0; top: 2rem; z-index: 30; width: min(25rem, 85vw); padding: 1.25rem; background: var(--color-elevated); border: 1px solid var(--color-border); box-shadow: 0 12px 30px #0003; }
+.high-contrast { --color-muted: #d1c9bd; --color-border: #8a8074; --grain-opacity: 0; }
+html.light.high-contrast { --color-muted: #342d25; --color-border: #766e63; }
+.high-contrast .stage .text-fg\/40 { color: var(--color-muted); }
+.coaching-card { border: 1px solid var(--color-border); background: var(--color-elevated); padding: clamp(1.25rem, 3vw, 2rem); }
+.practice-grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); }

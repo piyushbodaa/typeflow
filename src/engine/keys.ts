@@ -38,3 +38,10 @@ export function physicalKey(char: string): string {
   if (char >= 'A' && char <= 'Z') return char.toLowerCase()
   return SHIFTED[char] ?? char
 }
+
+export function fingerFor(char: string): string {
+  const key = physicalKey(char)
+  if (key === ' ') return 'thumb'
+  const groups = [ ['`1qaz', 'left pinky'], ['2wsx', 'left ring finger'], ['3edc', 'left middle finger'], ['45rtfgvb', 'left index finger'], ['67yuhjnm', 'right index finger'], ['8ik,', 'right middle finger'], ['9ol.', 'right ring finger'], ["0p;/-=[]\\'", 'right pinky'] ]
+  return groups.find(([keys]) => keys!.includes(key))?.[1] ?? 'finger'
+}

@@ -24,8 +24,15 @@ function useSettingsState(): SettingsValue {
 
   useEffect(() => {
     applyTheme(settings.theme)
+    document.documentElement.classList.toggle('high-contrast', settings.highContrast)
     saveSettings(settings)
   }, [settings])
+
+  useEffect(() => {
+    const sync = () => setSettings(loadSettings())
+    window.addEventListener('typeflow:import', sync)
+    return () => window.removeEventListener('typeflow:import', sync)
+  }, [])
 
   const update = useCallback((patch: Partial<Settings>) => {
     setSettings((prev) => ({ ...prev, ...patch }))

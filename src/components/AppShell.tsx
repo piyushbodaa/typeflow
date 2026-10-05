@@ -6,6 +6,7 @@ import type { Settings } from '../lib/storage'
 import { Wordmark } from './Wordmark'
 
 const links = [
+  { to: '/daily', label: 'Daily' },
   { to: '/test', label: 'Test' },
   { to: '/lessons', label: 'Lessons' },
   { to: '/history', label: 'History' },
@@ -30,9 +31,10 @@ export function AppShell({
   return (
     <div className="min-h-dvh text-fg">
       <div
+        inert={focused}
         className={cn(
           'border-b border-border transition-opacity duration-180',
-          focused && 'pointer-events-none h-0 overflow-hidden border-transparent opacity-0',
+          focused && 'pointer-events-none h-0 overflow-hidden border-0 opacity-0',
         )}
       >
         <header className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-3 gap-y-3 px-5 py-3 lg:h-14 lg:flex-nowrap lg:justify-between lg:px-8 lg:py-0">
@@ -89,7 +91,10 @@ export function AppShell({
           </nav>
         </header>
       </div>
-      <main className="mx-auto w-full max-w-6xl px-5 pb-20 pt-6 lg:px-8 lg:pt-8">
+      <main className={cn(
+        'mx-auto w-full max-w-6xl px-5 pb-20 pt-6 lg:px-8 lg:pt-8',
+        focused && 'lg:pb-0 lg:pt-0',
+      )}>
         <Outlet />
       </main>
     </div>
