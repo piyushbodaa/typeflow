@@ -6,6 +6,7 @@ import type { Settings } from '../lib/storage'
 import { Wordmark } from './Wordmark'
 
 const links = [
+  { to: '/daily', label: 'Daily' },
   { to: '/test', label: 'Test' },
   { to: '/lessons', label: 'Lessons' },
   { to: '/history', label: 'History' },
@@ -30,6 +31,7 @@ export function AppShell({
   return (
     <div className="min-h-dvh text-fg">
       <div
+        inert={focused}
         className={cn(
           'border-b border-border transition-opacity duration-180',
           focused && 'pointer-events-none h-0 overflow-hidden border-0 opacity-0',

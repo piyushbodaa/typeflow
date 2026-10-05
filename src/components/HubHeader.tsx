@@ -7,7 +7,7 @@ export function HubHeader() {
         Sit down. Type the next line.
       </h1>
       <p className="mt-5 max-w-[32rem] text-[17px] leading-7 text-muted">
-        Timed tests, twelve sequential lessons, and a local record. The clock waits until you begin.
+        Daily practice, twelve open lessons, and poetry chosen for your next step. The clock waits until you begin.
       </p>
     </header>
   )

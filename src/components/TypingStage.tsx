@@ -1,5 +1,6 @@
-import { useEffect, useRef, type FormEvent, type KeyboardEvent, type RefObject } from 'react'
+import { Fragment, useEffect, useRef, type FormEvent, type KeyboardEvent, type RefObject } from 'react'
 import type { EngineSnapshot, WordState } from '../engine/types'
+import { useSettings } from '../hooks/useTheme'
 import { cn } from '../lib/cn'
 
 interface TypingStageProps {
@@ -8,6 +9,7 @@ interface TypingStageProps {
   onKeyDown: (event: KeyboardEvent<HTMLInputElement>) => void
   onInput: (event: FormEvent<HTMLInputElement>) => void
   onFocusClick: () => void
+  lineBreaks?: number[]
 }
 
 export function TypingStage({
@@ -16,7 +18,10 @@ export function TypingStage({
   onKeyDown,
   onInput,
   onFocusClick,
+  lineBreaks = [],
 }: TypingStageProps) {
+  const { settings } = useSettings()
+  const breaks = new Set(lineBreaks)
   const currentRef = useRef<HTMLSpanElement>(null)
   const scrollerRef = useRef<HTMLDivElement>(null)
 
@@ -45,23 +50,28 @@ export function TypingStage({
         style={{ fontSize: 16 }}
         onKeyDown={onKeyDown}
         onInput={onInput}
+        onPaste={(event) => event.preventDefault()}
+        onDrop={(event) => event.preventDefault()}
         value=""
         onChange={() => {}}
       />
       <div
         ref={scrollerRef}
-        className="stage h-[6.6rem] overflow-hidden font-mono text-[1.25rem] leading-[2.2rem] tracking-[0.01em] lg:h-[7.2rem] lg:text-[1.55rem] lg:leading-[2.4rem]"
+        className="stage overflow-hidden font-mono tracking-[0.01em]"
+        style={{ fontSize: `clamp(18px, 5vw, ${settings.fontSize}px)`, lineHeight: 1.65, height: '4.95em' }}
       >
         <div className="flex flex-wrap gap-x-3 gap-y-0">
           {snapshot.words.map((word, index) => (
+            <Fragment key={`${index}-${word.expected}`}>
+            {breaks.has(index) ? <span className="basis-full h-0" aria-hidden /> : null}
             <Word
-              key={`${index}-${word.expected}`}
               word={word}
               active={index === snapshot.caret.wordIndex}
               caretIndex={index === snapshot.caret.wordIndex ? snapshot.caret.charIndex : null}
               blinking={snapshot.status !== 'running'}
               wordRef={index === snapshot.caret.wordIndex ? currentRef : undefined}
             />
+            </Fragment>
           ))}
         </div>
       </div>

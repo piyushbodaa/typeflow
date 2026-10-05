@@ -19,8 +19,7 @@ export function AboutPage() {
       </p>
       <h2 className="mt-10 font-display text-[1.6rem] italic tracking-tight">Why poems</h2>
       <p className="mt-3 text-muted">
-        Typing random words is a chore, so Typeflow does not ask you to. Apart from five short
-        key drills at the start of the lessons, every line you type is a stanza from a poem:{' '}
+        Typing random words is a chore, so Typeflow does not ask you to. Poems are the default. Short key drills and optional random-word practice provide another way to build the foundations. The poetry collection includes{' '}
         {POEMS.length} passages by {poets.length} poets from {places.join(', ')}. The 1-minute test
         runs through them too. Each poem is credited on screen; all of them are in the public
         domain, either in the original or in an old translation, and a few short ones were
@@ -31,16 +30,15 @@ export function AboutPage() {
       </p>
       <p className="mt-4 text-muted">
         Words per minute uses the standard formula: (correct characters / 5) divided by minutes
-        elapsed. Raw WPM counts incorrect and extra characters too. Accuracy is correct divided by
-        correct + incorrect + extra.
+        elapsed. Raw WPM counts incorrect and extra characters too. Final text accuracy is correct divided by correct + incorrect + extra. First-attempt accuracy measures whether each character was right the first time; corrections do not erase those mistakes. Guided mode asks you to correct errors before continuing. Flow mode lets you continue and review afterward.
       </p>
       <p className="mt-4 text-muted">
-        There is no account and no server. Settings, lesson progress, and the last fifty results
+        There is no account and no server. Settings, lesson progress, poem rotation, and the last fifty results
         stay in this browser&apos;s localStorage. Close the tab and they are still here; clear the
-        site data and they are gone.
+        site data and they are gone. Export and import a backup from History to move your progress between browsers.
       </p>
       <p className="mt-4 text-muted">
-        The home page is a hub — last run, best run, a short trail of accuracy. The 1-minute test
+        The home page offers daily practice, weekly accuracy, and benchmark records. Benchmarks use a fixed 60-second passage in Flow mode to keep comparisons consistent. The 1-minute test
         is one click away, and it never starts until you mean it.
       </p>
       <div className="rule mt-12" />

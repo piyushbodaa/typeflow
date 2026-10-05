@@ -5,10 +5,10 @@ export function StatsSnapshot({ snap }: { snap: DashboardSummary }) {
     <section aria-label="Snapshot stats">
       <div className="rule" />
       <div className="grid grid-cols-2 gap-x-10 gap-y-7 pt-6">
-        <Stat label="Last WPM" value={fmt(snap.lastWpm)} />
-        <Stat label="Best WPM" value={fmt(snap.bestWpm)} />
+        <Stat label="Last benchmark" value={fmt(snap.lastWpm)} />
+        <Stat label="Best benchmark" value={fmt(snap.bestWpm)} />
         <div>
-          <p className="kicker">Accuracy</p>
+          <p className="kicker">First-attempt accuracy</p>
           <p className="mt-3 font-mono text-[1.75rem] tabular-nums leading-none text-fg">
             {snap.lastAccuracy == null ? '—' : `${Math.round(snap.lastAccuracy)}%`}
           </p>

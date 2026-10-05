@@ -1,169 +1,29 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useCallback, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { ModePicker } from '../components/ModePicker'
-import { ResultsPanel } from '../components/ResultsPanel'
-import { useTypingSession } from '../components/TypingSession'
-import words from '../data/words.json'
-import type { EngineSnapshot, TimedSeconds, WordCount } from '../engine/types'
+import { PracticePlayer } from '../components/PracticePlayer'
+import { buildPoetry, type Difficulty, type PreparedPractice } from '../lib/practice'
+import type { TimedSeconds, WordCount } from '../engine/types'
 import { useDocumentTitle } from '../hooks/useDocumentTitle'
-import { useHistory } from '../hooks/useHistory'
-import { modeLabel } from '../lib/format'
-import { createPoemRotation } from '../lib/poemRotation'
-import { poemStream } from '../data/poems'
-import { mulberry32 } from '../engine/generate'
-import type { EngineMode } from '../engine/types'
-import { snapshotToResult } from '../lib/result'
-import { useSettings } from '../hooks/useTheme'
-
 export type TextSource = 'poems' | 'words'
-
-function parseMode(
-  params: URLSearchParams,
-): { kind: 'timed'; seconds: TimedSeconds } | { kind: 'words'; count: WordCount } {
-  const secondsRaw = Number(params.get('seconds'))
-  const wordsRaw = Number(params.get('words'))
-  if (wordsRaw === 10 || wordsRaw === 25 || wordsRaw === 50 || wordsRaw === 100) {
-    return { kind: 'words', count: wordsRaw }
-  }
-  if (secondsRaw === 15 || secondsRaw === 30 || secondsRaw === 60 || secondsRaw === 120) {
-    return { kind: 'timed', seconds: secondsRaw }
-  }
-  return { kind: 'timed', seconds: 60 }
-}
-
 export function TestPage() {
-  const { settings } = useSettings()
-  const navigate = useNavigate()
+  useDocumentTitle('Practice · typeflow')
   const [params, setParams] = useSearchParams()
-  const mode = useMemo(() => parseMode(params), [params])
-  const source: TextSource = params.get('source') === 'words' ? 'words' : 'poems'
-  // Poems are typed in order, so they become a custom run sized to the chosen mode; random
-  // words keep the engine's own top-up behaviour. History still records the picked mode.
-  const [attempt, setAttempt] = useState(0)
-  const passage = useMemo(() => {
-    const rotation = createPoemRotation()
-    const build = (): EngineMode => {
-      if (source === 'words') return mode
-      const rng = mulberry32((Date.now() + attempt) % 2147483647)
-      if (mode.kind === 'words') return { kind: 'custom', words: poemStream(rng, mode.count, undefined, rotation.pick).slice(0, mode.count) }
-      return { kind: 'custom', words: poemStream(rng, mode.seconds * 5, undefined, rotation.pick), seconds: mode.seconds }
-    }
-    return { mode: build(), rotation }
-  }, [mode, source, attempt])
-  const engineMode = passage.mode
-  const [armed, setArmed] = useState(() => params.get('go') === '1')
-  useEffect(() => {
-    if (armed && source === 'poems') passage.rotation.remember()
-  }, [armed, source, passage])
-  const beginRef = useRef<HTMLButtonElement>(null)
-  const { record } = useHistory()
-  const config = useMemo(() => ({ mode: engineMode, wordBank: words }), [engineMode])
-
-  useDocumentTitle(`Test \u00b7 typeflow`)
-
-  useEffect(() => {
-    if (params.get('go') === '1') setArmed(true)
-  }, [params])
-
-  useEffect(() => {
-    if (!armed) beginRef.current?.focus()
-  }, [armed])
-
-  const onComplete = useCallback(
-    (snapshot: EngineSnapshot) => {
-      record(snapshotToResult(snapshot, 'test', mode))
-    },
-    [record, mode],
-  )
-
-  const session = useTypingSession({
-    config,
-    sound: settings.sound,
-    showKeyboard: settings.showKeyboard,
-    armed,
-    onRestart: source === 'poems' ? () => setAttempt((value) => value + 1) : undefined,
-    onComplete,
-    idleNote: 'First keystroke starts the clock. Tab then Enter restarts. Tap the line to summon the keyboard.',
-    header: (
-      <div className="mb-10">
-        <div className="rule mb-8" />
-        <p className="kicker">{modeLabel(mode)}</p>
-        <h1 className="mt-3 font-display text-[2.1rem] italic leading-tight tracking-tight">
-          Type when you are ready.
-        </h1>
-      </div>
-    ),
-  })
-
-  function pickTime(seconds: TimedSeconds) {
-    setParams({ seconds: String(seconds), source })
-    setArmed(false)
-  }
-
-  function pickWords(count: WordCount) {
-    setParams({ words: String(count), source })
-    setArmed(false)
-  }
-
-  function pickSource(next: TextSource) {
-    const keep: Record<string, string> =
-      mode.kind === 'words' ? { words: String(mode.count) } : { seconds: String(mode.seconds) }
-    setParams({ ...keep, source: next })
-    setArmed(false)
-  }
-
-  function retry() {
-    // Same path as a clean session: reset engine + remount stage + restore focus.
-    session.restart()
-  }
-
-  if (session.snapshot.status === 'finished') {
-    return (
-      <>
-        {session.view}
-        <ResultsPanel
-          snapshot={session.snapshot}
-          copyLabel={modeLabel(mode)}
-          actions={[
-            { label: 'Retry', onClick: retry, primary: true },
-            { label: 'Back to hub', onClick: () => navigate('/') },
-            { label: 'Lessons', onClick: () => navigate('/lessons') },
-          ]}
-        />
-      </>
-    )
-  }
-
-  if (!armed) {
-    return (
-      <div className="flex min-h-[72vh] flex-col">
-        <div className="rule" />
-        <p className="kicker mt-8">Practice</p>
-        <h1 className="mt-4 max-w-[16ch] font-display text-[clamp(2.4rem,5vw,4.2rem)] italic leading-[1.02] tracking-tight">
-          Choose a mode, then begin.
-        </h1>
-        <p className="mt-4 max-w-lg text-[15px] leading-7 text-muted">
-          You type poetry here, not random words: stanzas from well-loved poems across the world,
-          one after another. The clock does not start until you confirm. After that, the first
-          keystroke starts the run.
-        </p>
-        <div className="mt-10">
-          <ModePicker mode={mode} source={source} onTimed={pickTime} onWords={pickWords} onSource={pickSource} />
-        </div>
-        <button
-          ref={beginRef}
-          type="button"
-          className="btn btn-primary mt-8 w-full sm:w-auto"
-          onClick={() => setArmed(true)}
-        >
-          Begin test
-        </button>
-        <div className="mt-auto">
-          <div className="rule" />
-        </div>
-      </div>
-    )
-  }
-
-  return session.view
+  const benchmark = params.get('benchmark') === '1'
+  const source: TextSource = !benchmark && params.get('source') === 'words' ? 'words' : 'poems'
+  const wordCount = Number(params.get('words')), time = Number(params.get('seconds'))
+  const count: WordCount | null = !benchmark && [10,25,50,100].includes(wordCount) ? wordCount as WordCount : null
+  const seconds: TimedSeconds = benchmark ? 60 : [15,30,60,120].includes(time) ? time as TimedSeconds : 60
+  const [difficulty, setDifficulty] = useState<Difficulty>('balanced')
+  const [adaptive, setAdaptive] = useState(params.get('adaptive') === '1')
+  const build = useCallback((seed: number): PreparedPractice => source === 'poems' ? buildPoetry(seed, { ...(count ? { count } : { seconds }), difficulty, adaptive, benchmark }) : { mode: count ? { kind:'words',count } : { kind:'timed', seconds }, passages: [], lineBreaks: [], remember: () => {}, targetKeys: [] }, [source, count, seconds, difficulty, adaptive, benchmark])
+  const mode = count ? { kind: 'words' as const, count } : { kind: 'timed' as const, seconds }
+  return <PracticePlayer key={params.toString()} title={benchmark ? 'Your steady benchmark.' : adaptive ? 'A poem for your next step.' : 'Make a little room for practice.'}
+    kicker={benchmark ? 'Benchmark · 60 seconds' : 'Practice'} build={build} autoBegin={params.get('go') === '1'} forcedStyle={benchmark ? 'flow' : undefined}
+    instruction={benchmark ? 'The same 60-second passage, in Flow mode, every time. Compare these runs to measure your progress under consistent conditions.' : 'Choose poetry or a word drill, set your pace, and begin when you are ready. Your mistakes will guide the next session.'}
+    resultInfo={{ source: 'test', mode, textSource: source, difficulty: benchmark ? 'balanced' : difficulty, benchmark }}
+    setup={benchmark ? null : <div className="space-y-5">
+      <ModePicker mode={mode} source={source} onTimed={(s) => setParams({ seconds: String(s), source })} onWords={(n) => setParams({ words: String(n), source })} onSource={(s) => setParams(count ? { words: String(count), source: s } : { seconds: String(seconds), source:s })} />
+      {source === 'poems' ? <div className="flex flex-wrap gap-5 text-sm"><label>Difficulty <select className="practice-select ml-2" value={difficulty} onChange={(e) => setDifficulty(e.target.value as Difficulty)}><option value="gentle">Gentle</option><option value="balanced">Balanced</option><option value="challenging">Challenging</option></select></label><label className="flex items-center gap-2"><input type="checkbox" checked={adaptive} onChange={(e) => setAdaptive(e.target.checked)} /> Focus on my weak keys</label></div> : null}
+    </div>} />
 }

@@ -12,14 +12,15 @@ export interface DashboardSummary {
 }
 
 export function summarize(results: TestResult[], completed: string[]): DashboardSummary {
-  const wpmValues = results.map((r) => r.wpm)
+  const benchmarks = results.filter((r) => r.benchmark && (r.firstAccuracy ?? 0) >= 95)
+  const wpmValues = benchmarks.map((r) => r.wpm)
   const chronological = [...results].reverse()
   return {
-    lastWpm: results[0] ? results[0].wpm : null,
+    lastWpm: benchmarks[0] ? benchmarks[0].wpm : null,
     bestWpm: wpmValues.length ? Math.max(...wpmValues) : null,
-    lastAccuracy: results[0] ? results[0].accuracy : null,
+    lastAccuracy: results[0]?.firstAccuracy ?? null,
     accuracySeries: chronological.slice(-8).map((r) => r.accuracy),
-    lessonsDone: completed.length,
+    lessonsDone: LESSONS.filter((l) => completed.includes(l.id)).length,
     lessonsTotal: LESSONS.length,
     recent: results.slice(0, 5),
   }

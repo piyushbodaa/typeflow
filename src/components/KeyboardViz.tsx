@@ -27,9 +27,9 @@ export function KeyboardViz({ expected }: { expected: string }) {
         <KeyRow keys={ROW1} active={phys} />
         <KeyRow keys={ROW2} active={phys} offset="ml-4" />
         <div className="flex gap-1">
-          <WideKey label="shift" active={shiftOn} width="w-[4.5rem]" />
+          <WideKey label="shift" active={shiftOn && !'qwertasdfgzxcvb12345'.includes(phys)} width="w-[4.5rem]" />
           <KeyRow keys={ROW3} active={phys} fingers />
-          <WideKey label="shift" active={shiftOn} width="w-[4.5rem]" />
+          <WideKey label="shift" active={shiftOn && 'qwertasdfgzxcvb12345'.includes(phys)} width="w-[4.5rem]" />
         </div>
         <KeyRow keys={ROW4} active={phys} offset="ml-8" />
         <WideKey label="space" active={phys === ' '} width="w-72" />

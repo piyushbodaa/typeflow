@@ -8,6 +8,7 @@ import { HistoryPage } from './pages/HistoryPage'
 import { HomePage } from './pages/HomePage'
 import { LessonPlayerPage } from './pages/LessonPlayerPage'
 import { LessonsPage } from './pages/LessonsPage'
+import { DailyPage } from './pages/DailyPage'
 import { TestPage } from './pages/TestPage'
 
 function Root() {
@@ -34,6 +35,7 @@ const router = createBrowserRouter([
     element: <Root />,
     children: [
       { index: true, element: <HomePage /> },
+      { path: 'daily', element: <DailyPage /> },
       { path: 'test', element: <TestPage /> },
       { path: 'lessons', element: <LessonsPage /> },
       { path: 'lessons/:id', element: <LessonPlayerPage /> },
