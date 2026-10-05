@@ -255,6 +255,23 @@ html:not(.light) .ribbon-mark img {
   max-width: 66ch;
 }
 
+.practice-session {
+  max-width: 52rem;
+}
+
+@media (min-width: 1024px) {
+  .practice-session {
+    min-height: calc(100svh - 9rem);
+    justify-content: center;
+    padding-block: 2rem;
+  }
+
+  .practice-session-running {
+    min-height: 100svh;
+  }
+}
+
+
 .sr-only {
   position: absolute;
   width: 1px;

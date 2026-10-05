@@ -31,7 +31,7 @@ export function TypingStage({
   }, [snapshot.caret.wordIndex, snapshot.caret.charIndex])
 
   return (
-    <div className="relative w-full max-w-[66ch]" onClick={onFocusClick}>
+    <div className="relative w-full" onClick={onFocusClick}>
       <input
         ref={inputRef}
         aria-label="Type here"

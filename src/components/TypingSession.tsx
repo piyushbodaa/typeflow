@@ -2,7 +2,6 @@ import { useEffect, type ReactNode } from 'react'
 import type { CreateEngineConfig, EngineSnapshot } from '../engine/types'
 import { useFocusMode } from '../hooks/useFocusMode'
 import { useTypingEngine } from '../hooks/useTypingEngine'
-import { useVisualViewport } from '../hooks/useVisualViewport'
 import { KeyboardViz } from './KeyboardViz'
 import { LiveHud } from './LiveHud'
 import { TypingStage } from './TypingStage'
@@ -36,7 +35,6 @@ export function useTypingSession({
     onRestart,
   })
   const { setFocused } = useFocusMode()
-  const viewportHeight = useVisualViewport()
 
   useEffect(() => {
     setFocused(armed && snapshot.status === 'running')
@@ -75,12 +73,7 @@ export function useTypingSession({
     ) : (
       <div
         key={sessionKey}
-        className="folio mx-auto flex w-full flex-col lg:min-h-[68vh] lg:justify-center"
-        style={
-          running && viewportHeight > 0
-            ? { maxHeight: Math.max(220, viewportHeight - 24), justifyContent: 'flex-start' }
-            : undefined
-        }
+        className={`practice-session mx-auto flex w-full flex-col ${running ? 'practice-session-running' : ''}`}
       >
         {snapshot.status !== 'running' ? header : null}
         <LiveHud stats={snapshot.stats} />
