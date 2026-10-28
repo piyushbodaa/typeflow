@@ -49,7 +49,7 @@ No environment variables. No backend.
 
 ## Data and privacy
 
-Settings, lesson progress, and the last 50 results live in `localStorage` under `typeflow:*`. Clearing site data wipes them. Nothing is sent anywhere.
+Settings, lesson progress, and the last 50 results live in `localStorage` under `typeflow:*`. Clearing site data wipes them. Typing text, settings, lesson progress, and results are not sent anywhere. Optional Google Analytics counts visits to public pages only after you choose **Allow analytics**. No analytics request is made before opt-in. Queries, fragments, referrers, history, and typed content are excluded; advertising features are disabled. You can decline or withdraw using **Analytics settings**.
 
 ## WPM
 

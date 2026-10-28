@@ -37,7 +37,9 @@ export function AboutPage() {
       <p className="mt-4 text-muted">
         There is no account and no server. Settings, lesson progress, and the last fifty results
         stay in this browser&apos;s localStorage. Close the tab and they are still here; clear the
-        site data and they are gone.
+        site data and they are gone. Optional Google Analytics counts visits to public pages
+        only if you allow it. Typed text, settings, scores, history, and lesson progress are
+        never included. Decline or withdraw any time with Analytics settings.
       </p>
       <p className="mt-4 text-muted">
         The home page is a hub — last run, best run, a short trail of accuracy. The 1-minute test
