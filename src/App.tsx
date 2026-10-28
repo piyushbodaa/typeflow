@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
+import { AnalyticsNavigation } from './components/AnalyticsNavigation'
 import { AppShell } from './components/AppShell'
 import { FocusModeContext } from './hooks/useFocusMode'
 import { SettingsProvider, useSettings } from './hooks/useTheme'
@@ -17,6 +18,7 @@ function Root() {
 
   return (
     <FocusModeContext.Provider value={focusValue}>
+      <AnalyticsNavigation />
       <AppShell
         focused={focused}
         settings={settings}
